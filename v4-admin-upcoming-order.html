@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+<title>업커밍 순서 관리 · 관리자</title>
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+<style>
+:root {
+  --bg: #FFFFFF; --surface: #F4F6F9; --surface-2: #EDF0F5;
+  --ink: #111111; --ink-2: #4B5563; --muted: #8B92A0;
+  --line: #E5E7EB; --line-2: #EEF1F5;
+  --primary: #3B6EF5; --primary-soft: #E8F0FF;
+  --warn: #FF6A3D; --success: #1FA363; --success-soft: #E6F7EE;
+  --radius-card: 16px; --radius-sm: 10px; --radius-pill: 999px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { background: var(--surface); color: var(--ink); font-family: 'Pretendard', sans-serif; -webkit-font-smoothing: antialiased; font-feature-settings: "ss01","tnum"; min-height: 100vh; }
+a { color: inherit; text-decoration: none; }
+button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; padding: 0; }
+img { display: block; max-width: 100%; }
+
+.admin { display: grid; grid-template-columns: 1fr; min-height: 100vh; }
+@media (min-width: 1024px) { .admin { grid-template-columns: 240px 1fr; } }
+
+/* SIDEBAR */
+.side { background: white; border-right: 1px solid var(--line); padding: 24px 16px; display: none; }
+@media (min-width: 1024px) { .side { display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh; } }
+.side__logo { font-size: 22px; font-weight: 800; letter-spacing: -0.04em; color: var(--primary); margin-bottom: 4px; padding: 0 8px; }
+.side__logo em { font-style: normal; color: var(--ink); }
+.side__role { font-size: 11px; color: var(--muted); font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 28px; padding: 0 8px; }
+.side__group-label { font-size: 11px; color: var(--muted); font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; margin: 20px 8px 6px; }
+.side__nav { display: flex; flex-direction: column; gap: 2px; }
+.side__link { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px; font-size: 13.5px; font-weight: 500; color: var(--ink-2); transition: background 160ms; }
+.side__link:hover { background: var(--surface); color: var(--ink); }
+.side__link.is-active { background: var(--ink); color: white; font-weight: 600; }
+.side__link svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 1.8; flex-shrink: 0; }
+.side__user { margin-top: auto; padding: 16px 12px; border-top: 1px solid var(--line); display: flex; align-items: center; gap: 10px; }
+.side__avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px; }
+.side__user-name { font-size: 13px; font-weight: 600; }
+.side__user-role { font-size: 11px; color: var(--muted); font-weight: 500; }
+
+.main { background: var(--surface); min-width: 0; }
+
+.topbar { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; background: white; border-bottom: 1px solid var(--line); position: sticky; top: 0; z-index: 30; gap: 12px; }
+@media (min-width: 1024px) { .topbar { padding: 16px 32px; } }
+.crumb { font-size: 12px; color: var(--muted); font-weight: 500; }
+.crumb a:hover { color: var(--ink); }
+.crumb span { margin: 0 6px; opacity: 0.5; }
+.crumb .now { color: var(--ink); }
+.topbar-actions { display: flex; align-items: center; gap: 12px; }
+.autosave { display: inline-flex; align-items: center; gap: 8px; font-size: 12px; color: var(--ink-2); font-weight: 600; padding: 6px 12px; background: var(--success-soft); border-radius: var(--radius-pill); }
+.autosave .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--success); animation: pulse 2s infinite; }
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+.btn-secondary { font-size: 13px; font-weight: 600; padding: 9px 16px; background: white; border: 1.5px solid var(--line); border-radius: 10px; transition: border-color 160ms; display: inline-flex; align-items: center; gap: 4px; }
+.btn-secondary:hover { border-color: var(--ink); }
+@media (max-width: 639px) { .autosave span:last-child { display: none; } .autosave { padding: 6px 9px; } }
+
+/* PAGE HEAD */
+.page-head { padding: 28px 20px 20px; }
+@media (min-width: 1024px) { .page-head { padding: 40px 32px 24px; } }
+.page-title { font-size: 24px; font-weight: 800; letter-spacing: -0.025em; margin-bottom: 4px; }
+@media (min-width: 1024px) { .page-title { font-size: 32px; } }
+.page-desc { font-size: 13px; color: var(--ink-2); max-width: 65ch; line-height: 1.55; }
+
+/* HELP CARD */
+.help-card { margin: 0 20px 24px; background: var(--ink); color: white; border-radius: var(--radius-card); padding: 20px 22px; display: flex; gap: 14px; align-items: flex-start; }
+@media (min-width: 1024px) { .help-card { margin: 0 32px 32px; padding: 22px 28px; } }
+.help-card__icon { width: 36px; height: 36px; background: rgba(255,255,255,0.1); border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+.help-card__icon svg { width: 18px; height: 18px; stroke: #7AA0FF; fill: none; stroke-width: 2; }
+.help-card__text { font-size: 13px; line-height: 1.65; color: rgba(255,255,255,0.85); }
+.help-card__text strong { color: white; display: block; margin-bottom: 4px; font-size: 13.5px; }
+.help-card__text kbd { font-size: 11px; padding: 2px 6px; background: rgba(255,255,255,0.15); border-radius: 4px; font-weight: 600; font-family: inherit; }
+
+/* COLUMNS */
+.columns { padding: 0 20px 80px; display: grid; gap: 16px; grid-template-columns: 1fr; }
+@media (min-width: 1024px) { .columns { padding: 0 32px 100px; grid-template-columns: 1fr 1fr; gap: 20px; } }
+
+.column { background: white; border-radius: var(--radius-card); border: 1px solid var(--line); padding: 22px; min-height: 400px; }
+@media (min-width: 1024px) { .column { padding: 28px; } }
+
+.column__head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; padding-bottom: 14px; border-bottom: 1px solid var(--line); flex-wrap: wrap; gap: 10px; }
+.column__title-wrap { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.column__tag { font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 6px; flex-shrink: 0; }
+.column__tag.a { background: var(--primary); color: white; }
+.column__tag.b { background: var(--surface-2); color: var(--ink-2); }
+.column__title { font-size: 18px; font-weight: 800; letter-spacing: -0.02em; }
+@media (min-width: 1024px) { .column__title { font-size: 20px; } }
+.column__sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+.add-btn { display: inline-flex; align-items: center; gap: 5px; padding: 8px 14px; border: 1.5px dashed var(--line); background: var(--surface); border-radius: var(--radius-pill); font-size: 12px; font-weight: 600; color: var(--ink-2); transition: all 160ms; }
+.add-btn:hover { border-color: var(--primary); border-style: solid; color: var(--primary); background: var(--primary-soft); }
+.add-btn svg { width: 12px; height: 12px; stroke: currentColor; fill: none; stroke-width: 2.5; }
+
+.column__count { font-size: 12px; color: var(--muted); margin-bottom: 12px; }
+.column__count strong { color: var(--ink); font-weight: 700; }
+
+/* SORT LIST */
+.sort-list { display: flex; flex-direction: column; gap: 8px; min-height: 200px; }
+.sort-card { display: grid; grid-template-columns: 22px 52px 1fr auto auto auto; align-items: center; gap: 12px; padding: 10px 12px; background: var(--surface); border-radius: 12px; transition: background 160ms, box-shadow 160ms; }
+.sort-card:hover { background: var(--surface-2); }
+.sort-card.sortable-ghost { opacity: 0.4; }
+.sort-card.sortable-chosen { background: white; box-shadow: 0 8px 24px rgba(0,0,0,0.1); cursor: grabbing; }
+
+.sort-handle { display: flex; flex-direction: column; gap: 3px; cursor: grab; padding: 4px 2px; color: var(--muted); }
+.sort-handle:active { cursor: grabbing; }
+.sort-handle span { width: 12px; height: 1.5px; background: currentColor; border-radius: 1px; }
+.sort-handle:hover { color: var(--ink); }
+
+.sort-card__thumb { width: 52px; height: 40px; background: white; border-radius: 6px; overflow: hidden; flex-shrink: 0; }
+.sort-card__thumb img { width: 100%; height: 100%; object-fit: cover; }
+
+.sort-card__info { min-width: 0; }
+.sort-card__brand { font-size: 10px; color: var(--muted); font-weight: 500; }
+.sort-card__name { font-size: 13.5px; font-weight: 700; letter-spacing: -0.015em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 1px; }
+
+.sort-card__eta { font-size: 11px; font-weight: 600; color: var(--primary); padding: 3px 8px; background: var(--primary-soft); border-radius: 5px; white-space: nowrap; }
+@media (max-width: 639px) { .sort-card__eta { display: none; } }
+
+.sort-card__pos { font-size: 11px; color: var(--muted); font-weight: 700; width: 26px; text-align: center; font-variant-numeric: tabular-nums; }
+
+.sort-card__remove { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--muted); transition: all 160ms; }
+.sort-card__remove:hover { background: white; color: var(--warn); }
+.sort-card__remove svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 1.8; }
+
+/* TOAST */
+.toast { position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%) translateY(140%); z-index: 200; display: inline-flex; align-items: center; gap: 8px; padding: 12px 22px; background: var(--ink); color: white; border-radius: var(--radius-pill); font-size: 13px; font-weight: 600; box-shadow: 0 12px 32px rgba(0,0,0,0.18); transition: transform 360ms cubic-bezier(0.22, 0.61, 0.36, 1); }
+.toast.is-show { transform: translateX(-50%) translateY(0); }
+.toast svg { width: 14px; height: 14px; stroke: var(--success); fill: none; stroke-width: 2.5; }
+
+/* MODAL */
+.modal-overlay { position: fixed; inset: 0; z-index: 150; background: rgba(17,17,17,0.5); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; padding: 20px; }
+.modal-overlay.is-show { display: flex; animation: fadeIn 220ms ease; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+.modal { background: white; border-radius: 20px; width: 100%; max-width: 520px; max-height: 80vh; display: flex; flex-direction: column; animation: modalIn 300ms cubic-bezier(0.22, 0.61, 0.36, 1); position: relative; }
+@keyframes modalIn { from { opacity: 0; transform: translateY(20px) scale(0.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
+.modal__head { padding: 24px 28px 12px; }
+.modal__title { font-size: 20px; font-weight: 800; letter-spacing: -0.025em; margin-bottom: 4px; }
+.modal__desc { font-size: 13px; color: var(--ink-2); }
+.modal__close { position: absolute; top: 20px; right: 20px; width: 32px; height: 32px; border-radius: 50%; background: var(--surface); display: flex; align-items: center; justify-content: center; font-size: 18px; line-height: 1; color: var(--ink-2); transition: all 160ms; }
+.modal__close:hover { background: var(--surface-2); color: var(--ink); }
+.modal__search { padding: 12px 28px; }
+.modal__search input { width: 100%; padding: 12px 14px; background: var(--surface); border: 1.5px solid transparent; border-radius: 10px; font-size: 14px; font-family: inherit; }
+.modal__search input:focus { outline: none; background: white; border-color: var(--primary); }
+.modal__body { padding: 4px 20px; overflow-y: auto; flex: 1; }
+.candidate { display: grid; grid-template-columns: 44px 1fr auto; gap: 12px; align-items: center; padding: 10px 12px; border-radius: 10px; cursor: pointer; transition: background 160ms; }
+.candidate:hover { background: var(--surface); }
+.candidate__thumb { width: 44px; height: 34px; background: var(--surface); border-radius: 5px; overflow: hidden; }
+.candidate__thumb img { width: 100%; height: 100%; object-fit: cover; }
+.candidate__brand { font-size: 10px; color: var(--muted); font-weight: 500; }
+.candidate__name { font-size: 13.5px; font-weight: 700; letter-spacing: -0.015em; margin-top: 1px; }
+.candidate__add { font-size: 11px; font-weight: 700; padding: 6px 12px; background: var(--ink); color: white; border-radius: var(--radius-pill); }
+.modal__foot { padding: 14px 28px 22px; text-align: right; }
+</style>
+</head>
+<body>
+
+<div class="admin">
+
+  <aside class="side">
+    <div class="side__logo">GA<em>:RAGE</em></div>
+    <div class="side__role">Admin</div>
+    <nav class="side__nav">
+      <a href="/admin" class="side__link">
+        <svg viewBox="0 0 24 24"><path d="M3 9l9-6 9 6v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/></svg>
+        대시보드
+      </a>
+      <div class="side__group-label">차량 관리</div>
+      <a href="/admin/vehicles" class="side__link">
+        <svg viewBox="0 0 24 24"><path d="M3 13l2-5h14l2 5M5 13h14v5H5z M7 18v2 M17 18v2"/></svg>
+        차량 목록
+      </a>
+      <a href="/admin/vehicles/new" class="side__link">
+        <svg viewBox="0 0 24 24"><path d="M12 5v14 M5 12h14"/></svg>
+        차량 등록
+      </a>
+      <a href="/admin/upcoming/order" class="side__link is-active">
+        <svg viewBox="0 0 24 24"><path d="M3 6h13 M3 12h13 M3 18h13 M20 5l-3 3 3 3 M20 13l-3 3 3 3"/></svg>
+        업커밍 순서
+      </a>
+      <div class="side__group-label">콘텐츠</div>
+      <a href="/admin/notices" class="side__link">
+        <svg viewBox="0 0 24 24"><path d="M5 4h14v16H5z M9 9h6 M9 13h6 M9 17h4"/></svg>
+        공지사항
+      </a>
+      <a href="/admin/faq" class="side__link">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 015 0c0 1.5-2.5 2-2.5 3.5 M12 17h.01"/></svg>
+        FAQ
+      </a>
+      <div class="side__group-label">기타</div>
+      <a href="/admin/users" class="side__link">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20a8 8 0 0116 0"/></svg>
+        회원 관리
+      </a>
+    </nav>
+    <div class="side__user">
+      <div class="side__avatar">J</div>
+      <div><div class="side__user-name">JDH</div><div class="side__user-role">관리자</div></div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <div class="crumb"><a href="/admin">관리자</a><span>›</span><a href="/admin/upcoming">업커밍</a><span>›</span><span class="now">순서 관리</span></div>
+      <div class="topbar-actions">
+        <span class="autosave"><span class="dot"></span><span>자동 저장</span></span>
+        <button class="btn-secondary" onclick="window.open('/upcoming','_blank')">사이트에서 보기 ↗</button>
+      </div>
+    </div>
+
+    <header class="page-head">
+      <h1 class="page-title">업커밍 순서 관리</h1>
+      <p class="page-desc">업커밍 페이지에 노출되는 두 그룹의 차량 순서를 자유롭게 배치합니다. 카드를 드래그하여 순서를 바꾸거나 그룹 사이로 이동할 수 있고, 변경사항은 자동으로 저장됩니다.</p>
+    </header>
+
+    <div class="help-card">
+      <div class="help-card__icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v4 M12 16h.01"/></svg></div>
+      <div class="help-card__text">
+        <strong>사용 방법</strong>
+        카드 왼쪽 핸들(<kbd>≡</kbd>)을 잡고 드래그하면 같은 그룹 안에서 순서를 바꿀 수 있고, 다른 그룹으로 끌어다 놓으면 그룹이 변경됩니다. 차량을 업커밍에서 제외하려면 카드 우측 <kbd>×</kbd>를 클릭하세요. (차량 자체는 삭제되지 않습니다)
+      </div>
+    </div>
+
+    <div class="columns">
+
+      <!-- GROUP A -->
+      <section class="column">
+        <header class="column__head">
+          <div class="column__title-wrap">
+            <span class="column__tag a">A</span>
+            <div>
+              <h2 class="column__title">1달 내 출고</h2>
+              <p class="column__sub">곧 구독 종료되는 차량</p>
+            </div>
+          </div>
+          <button class="add-btn" data-add-to="a"><svg viewBox="0 0 24 24"><path d="M12 5v14 M5 12h14"/></svg>차량 추가</button>
+        </header>
+        <div class="column__count"><strong>6</strong>대 배치됨</div>
+
+        <div class="sort-list" id="listA">
+          <div class="sort-card" data-id="7">
+            <div class="sort-handle"><span></span><span></span><span></span></div>
+            <div class="sort-card__thumb"><img src="https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=200" alt="" /></div>
+            <div class="sort-card__info"><div class="sort-card__brand">Porsche</div><div class="sort-card__name">Cayenne Turbo</div></div>
+            <span class="sort-card__eta">12월 첫째 주</span>
+            <span class="sort-card__pos">1</span>
+            <button class="sort-card__remove"><svg viewBox="0 0 24 24"><path d="M6 6l12 12 M6 18L18 6"/></svg></button>
+          </div>
+          <div class="sort-card" data-id="8">
+            <div class="sort-handle"><span></span><span></span><span></span></div>
+            <div class="sort-card__thumb"><img src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=200" alt="" /></div>
+            <div class="sort-card__info"><div class="sort-card__brand">BMW</div><div class="sort-card__name">M3 Competition</div></div>
+            <span class="sort-card__eta">12월 둘째 주</span>
+            <span class="sort-card__pos">2</span>
+            <button class="sort-card__remove"><svg viewBox="0 0 24 24"><path d="M6 6l12 12 M6 18L18 6"/></svg></button>
+          </div>
+          <div class="sort-card" data-id="9">
+            <div class="sort-handle"><span></span><span></span><span></span></div>
+            <div class="sort-card__thumb"><img src="https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?w=200" alt="" /></div>
+            <div class="sort-card__info"><div class="sort-card__brand">Genesis</div><div class="sort-card__name">G80 Sport</div></div>
+            <span class="sort-card__eta">12월 셋째 주</span>
+            <span class="sort-card__pos">3</span>
+            <button class="sort-card__remove"><svg viewBox="0 0 24 24"><path d="M6 6l12 12 M6 18L18 6"/></svg></button>
+          </div>
+          <div class="sort-card" data-id="10">
+            <div class="sort-handle"><span></span><span></span><span></span></div>
+            <div class="sort-card__thumb"><img src="https://images.unsplash.com/photo-1617814076367-b759c7d7e738?w=200" alt="" /></div>
+            <div class="sort-card__info"><div class="sort-card__brand">Audi</div><div class="sort-card__name">Q8 50 TDI</div></div>
+            <span class="sort-card__eta">12월 넷째 주</span>
+            <span class="sort-card__pos">4</span>
+            <button class="sort-card__remove"><svg viewBox="0 0 24 24"><path d="M6 6l12 12 M6 18L18 6"/></svg></button>
+          </div>
+          <div class="sort-card" data-id="11">
+            <div class="sort-handle"><span></span><span></span><span></span></div>
+            <div class="sort-card__thumb"><img src="https://images.unsplash.com/photo-1542362567-b07e54358753?w=200" alt="" /></div>
+            <div class="sort-card__info"><div class="sort-card__brand">Mercedes-Benz</div><div class="sort-card__name">GLE 450 4MATIC</div></div>
+            <span class="sort-card__eta">1월 첫째 주</span>
+            <span class="sort-card__pos">5</span>
+            <button class="sort-card__remove"><svg viewBox="0 0 24 24"><path d="M6 6l12 12 M6 18L18 6"/></svg></button>
+          </div>
+          <div class="sort-card" data-id="12">
+            <div class="sort-handle"><span></span><span></span><span></span></div>
+            <div class="sort-card__thumb"><img src="https://images.unsplash.com/photo-1555215695-3004980ad54e?w=200" alt="" /></div>
+            <div class="sort-card__info"><div class="sort-card__brand">Land Rover</div><div class="sort-card__name">Defender 110 X</div></div>
+            <span class="sort-card__eta">1월 둘째 주</span>
+            <span class="sort-card__pos">6</span>
+            <button class="sort-card__remove"><svg viewBox="0 0 24 24"><path d="M6 6l12 12 M6 18L18 6"/></svg></button>
+          </div>
+        </div>
+      </section>
+
+      <!-- GROUP B -->
+      <section class="column">
+        <header class="column__head">
+          <div class="column__title-wrap">
+            <span class="column__tag b">B</span>
+            <div>
+              <h2 class="column__title">그 밖에 준비 중</h2>
+              <p class="column__sub">언젠가 입고될 차량</p>
+            </div>
+          </div>
+          <button class="add-btn" data-add-to="b"><svg viewBox="0 0 24 24"><path d="M12 5v14 M5 12h14"/></svg>차량 추가</button>
+        </header>
+        <div class="column__count"><strong>3</strong>대 배치됨</div>
+
+        <div class="sort-list" id="listB">
+          <div class="sort-card" data-id="13">
+            <div class="sort-handle"><span></span><span></span><span></span></div>
+            <div class="sort-card__thumb"><img src="https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=200" alt="" /></div>
+            <div class="sort-card__info"><div class="sort-card__brand">Bentley</div><div class="sort-card__name">Continental GT</div></div>
+            <span class="sort-card__eta">2월 이후</span>
+            <span class="sort-card__pos">1</span>
+            <button class="sort-card__remove"><svg viewBox="0 0 24 24"><path d="M6 6l12 12 M6 18L18 6"/></svg></button>
+          </div>
+          <div class="sort-card" data-id="14">
+            <div class="sort-handle"><span></span><span></span><span></span></div>
+            <div class="sort-card__thumb"><img src="https://images.unsplash.com/photo-1617814076367-b759c7d7e738?w=200" alt="" /></div>
+            <div class="sort-card__info"><div class="sort-card__brand">Porsche</div><div class="sort-card__name">Macan GTS</div></div>
+            <span class="sort-card__eta">2월 이후</span>
+            <span class="sort-card__pos">2</span>
+            <button class="sort-card__remove"><svg viewBox="0 0 24 24"><path d="M6 6l12 12 M6 18L18 6"/></svg></button>
+          </div>
+          <div class="sort-card" data-id="15">
+            <div class="sort-handle"><span></span><span></span><span></span></div>
+            <div class="sort-card__thumb"><img src="https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?w=200" alt="" /></div>
+            <div class="sort-card__info"><div class="sort-card__brand">Maserati</div><div class="sort-card__name">Levante Modena</div></div>
+            <span class="sort-card__eta">3월 이후</span>
+            <span class="sort-card__pos">3</span>
+            <button class="sort-card__remove"><svg viewBox="0 0 24 24"><path d="M6 6l12 12 M6 18L18 6"/></svg></button>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <svg viewBox="0 0 24 24"><path d="M5 12l4 4 10-10"/></svg>
+  <span>순서가 저장되었습니다</span>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <button class="modal__close" id="modalClose">×</button>
+    <header class="modal__head">
+      <h3 class="modal__title">차량 추가</h3>
+      <p class="modal__desc">업커밍에 아직 배정되지 않은 차량 목록입니다.</p>
+    </header>
+    <div class="modal__search">
+      <input type="text" placeholder="모델명 또는 브랜드로 검색" />
+    </div>
+    <div class="modal__body">
+      <div class="candidate">
+        <div class="candidate__thumb"><img src="https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=200" alt="" /></div>
+        <div><div class="candidate__brand">Mercedes-Benz</div><div class="candidate__name">S 580 4MATIC</div></div>
+        <button class="candidate__add">추가</button>
+      </div>
+      <div class="candidate">
+        <div class="candidate__thumb"><img src="https://images.unsplash.com/photo-1542362567-b07e54358753?w=200" alt="" /></div>
+        <div><div class="candidate__brand">BMW</div><div class="candidate__name">X7 xDrive40i</div></div>
+        <button class="candidate__add">추가</button>
+      </div>
+      <div class="candidate">
+        <div class="candidate__thumb"><img src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=200" alt="" /></div>
+        <div><div class="candidate__brand">Tesla</div><div class="candidate__name">Model S Plaid</div></div>
+        <button class="candidate__add">추가</button>
+      </div>
+      <div class="candidate">
+        <div class="candidate__thumb"><img src="https://images.unsplash.com/photo-1555215695-3004980ad54e?w=200" alt="" /></div>
+        <div><div class="candidate__brand">Volvo</div><div class="candidate__name">XC90 Recharge</div></div>
+        <button class="candidate__add">추가</button>
+      </div>
+      <div class="candidate">
+        <div class="candidate__thumb"><img src="https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?w=200" alt="" /></div>
+        <div><div class="candidate__brand">Land Rover</div><div class="candidate__name">Discovery Sport</div></div>
+        <button class="candidate__add">추가</button>
+      </div>
+    </div>
+    <div class="modal__foot">
+      <button class="btn-secondary" id="modalCancel">닫기</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const listA = document.getElementById('listA');
+const listB = document.getElementById('listB');
+const toast = document.getElementById('toast');
+
+function showToast(text) {
+  toast.querySelector('span').textContent = text || '순서가 저장되었습니다';
+  toast.classList.add('is-show');
+  clearTimeout(showToast._t);
+  showToast._t = setTimeout(() => toast.classList.remove('is-show'), 2200);
+}
+
+function reindex(list) {
+  [...list.children].forEach((card, i) => {
+    const pos = card.querySelector('.sort-card__pos');
+    if (pos) pos.textContent = i + 1;
+  });
+  const col = list.closest('.column');
+  const count = col.querySelector('.column__count strong');
+  if (count) count.textContent = list.children.length;
+}
+
+function persistOrder() {
+  const payload = {
+    group_a: [...listA.children].map(c => Number(c.dataset.id)),
+    group_b: [...listB.children].map(c => Number(c.dataset.id))
+  };
+  console.log('PATCH /admin/api/upcoming/order', payload);
+  // fetch('/admin/api/upcoming/order', { method: 'PATCH', headers: {'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+  showToast();
+}
+
+[listA, listB].forEach(list => {
+  new Sortable(list, {
+    group: 'upcoming',
+    animation: 200,
+    handle: '.sort-handle',
+    ghostClass: 'sortable-ghost',
+    chosenClass: 'sortable-chosen',
+    onEnd: () => {
+      reindex(listA);
+      reindex(listB);
+      persistOrder();
+    }
+  });
+});
+
+document.addEventListener('click', e => {
+  const btn = e.target.closest('.sort-card__remove');
+  if (!btn) return;
+  const card = btn.closest('.sort-card');
+  const list = card.parentElement;
+  if (confirm('이 차량을 업커밍에서 제외하시겠습니까? (차량 자체는 삭제되지 않습니다)')) {
+    card.style.transition = 'opacity 200ms, transform 200ms';
+    card.style.opacity = '0';
+    card.style.transform = 'translateX(-20px)';
+    setTimeout(() => {
+      card.remove();
+      reindex(list);
+      persistOrder();
+      showToast('업커밍에서 제외되었습니다');
+    }, 200);
+  }
+});
+
+const modal = document.getElementById('modal');
+document.querySelectorAll('[data-add-to]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    modal.dataset.target = btn.dataset.addTo;
+    modal.classList.add('is-show');
+  });
+});
+document.getElementById('modalClose').addEventListener('click', () => modal.classList.remove('is-show'));
+document.getElementById('modalCancel').addEventListener('click', () => modal.classList.remove('is-show'));
+modal.addEventListener('click', e => { if (e.target === modal) modal.classList.remove('is-show'); });
+
+document.querySelectorAll('.candidate__add').forEach(b => {
+  b.addEventListener('click', () => {
+    modal.classList.remove('is-show');
+    showToast('차량이 업커밍에 추가되었습니다');
+  });
+});
+</script>
+
+</body>
+</html>

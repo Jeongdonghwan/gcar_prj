@@ -1,0 +1,145 @@
+{% extends 'base.html' %}
+{% from 'public/_vehicle_card.html' import vehicle_card %}
+{% block title %}Great Car — 차량 구독 큐레이션{% endblock %}
+
+{% block content %}
+<div class="container">
+
+  {% if banners %}
+  <section class="hero" aria-label="히어로 배너">
+    {% for b in banners %}
+      {% set link = b.link_url or url_for('public.vehicles_list') %}
+      {% if b.image_path %}
+        <a href="{{ link }}" class="hero-slide has-image" data-hero-slide
+           aria-label="{{ b.title or '배너' }}"
+           {% if not loop.first %}style="display:none;"{% endif %}>
+          <img src="{{ b.image_path }}" alt="{{ b.title or '' }}" />
+        </a>
+      {% else %}
+        <div class="hero-slide" data-hero-slide {% if not loop.first %}style="display:none;"{% endif %}>
+          <div class="hero-content">
+            {% if b.eyebrow %}<div class="hero-eyebrow">{{ b.eyebrow }}</div>{% endif %}
+            <h1 class="hero-title">
+              {% if b.link_url %}<a href="{{ link }}" style="color:inherit;">{{ b.title }}</a>{% else %}{{ b.title }}{% endif %}
+            </h1>
+            {% if b.subtitle %}<p class="hero-sub">{{ b.subtitle }}</p>{% endif %}
+            <div class="hero-actions">
+              <a href="{{ url_for('public.vehicles_list') }}" class="btn hero-cta">차량 둘러보기 →</a>
+            </div>
+          </div>
+        </div>
+      {% endif %}
+    {% endfor %}
+    {% if banners|length > 1 %}<div class="hero-counter" data-hero-counter>1/{{ banners|length }}</div>{% endif %}
+  </section>
+  {% endif %}
+
+  <section class="quick-grid" aria-label="빠른 진입">
+    <a class="quick-card" href="{{ url_for('public.vehicles_list') }}">
+      <span class="qc-icon" aria-hidden="true">
+        <svg width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M23 4l5 5-5 5" />
+          <path d="M4 15v-2a4 4 0 0 1 4-4h20" />
+          <path d="M9 28l-5-5 5-5" />
+          <path d="M28 17v2a4 4 0 0 1-4 4H4" />
+        </svg>
+      </span>
+      <div class="qc-body">
+        <div class="label">FOR LONG TERM</div>
+        <div class="title">구독으로 시작하기</div>
+        <div class="sub">한 달 단위, 부담 없이</div>
+      </div>
+      <span class="arrow">↗</span>
+    </a>
+    <a class="quick-card" href="{{ url_for('public.vehicles_list') }}">
+      <span class="qc-icon" aria-hidden="true">
+        <svg width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M5 21v-4l2-6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2l2 6v4" />
+          <path d="M5 21h22" />
+          <circle cx="10" cy="23" r="2.5" />
+          <circle cx="22" cy="23" r="2.5" />
+          <path d="M9 15h14" />
+        </svg>
+      </span>
+      <div class="qc-body">
+        <div class="label">ALL VEHICLES</div>
+        <div class="title">전체 차량 보기</div>
+        <div class="sub">브랜드·가격순 탐색</div>
+      </div>
+      <span class="arrow">↗</span>
+    </a>
+    <a class="quick-card" href="{{ url_for('public.upcoming') }}">
+      <span class="qc-icon" aria-hidden="true">
+        <svg width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M16 4l2 8 8 2-8 2-2 8-2-8-8-2 8-2z" />
+          <path d="M26 6l1 3 3 1-3 1-1 3-1-3-3-1 3-1z" />
+        </svg>
+      </span>
+      <div class="qc-body">
+        <div class="label">COMING SOON</div>
+        <div class="title">업커밍 차량 둘러보기</div>
+        <div class="sub">에디터가 큐레이션한 다음 라인업</div>
+      </div>
+      <span class="arrow">↗</span>
+    </a>
+    <a class="quick-card" href="{{ url_for('public.faq') }}">
+      <span class="qc-icon" aria-hidden="true">
+        <svg width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M28 20a2 2 0 0 1-2 2H10l-6 5V7a2 2 0 0 1 2-2h20a2 2 0 0 1 2 2z" />
+          <path d="M13 13a3 3 0 1 1 4.5 2.6c-.6.3-1.5.9-1.5 1.9v.5" />
+          <circle cx="16" cy="21" r="0.5" />
+        </svg>
+      </span>
+      <div class="qc-body">
+        <div class="label">SUPPORT</div>
+        <div class="title">자주 묻는 질문</div>
+        <div class="sub">카카오 1:1로 바로 상담</div>
+      </div>
+      <span class="arrow">↗</span>
+    </a>
+  </section>
+
+  <section aria-label="차량 둘러보기" style="margin-top:24px;" data-vehicle-slider tabindex="0">
+    <div class="section-head">
+      <h2 class="section-title">차량 둘러보기</h2>
+      <div class="section-actions">
+        <a class="btn btn-outline" href="{{ url_for('public.vehicles_list') }}" style="padding:8px 14px;font-size:13px;">전체보기 →</a>
+        <div class="slider-arrows">
+          <button class="slider-arrow" data-slider-prev aria-label="이전">‹</button>
+          <span class="slider-counter" data-slider-counter>1/1</span>
+          <button class="slider-arrow" data-slider-next aria-label="다음">›</button>
+        </div>
+      </div>
+    </div>
+
+    {% if brands %}
+    <div class="brand-strip" role="tablist" aria-label="브랜드 둘러보기">
+      <a href="{{ url_for('public.vehicles_list') }}" class="brand-pill only-text">전체</a>
+      {% for b in brands %}
+        <a href="{{ url_for('public.vehicles_list', brand=b.slug) }}"
+           class="brand-pill" title="{{ b.name }}">
+          {% if b.logo_path %}<img src="{{ b.logo_path }}" alt="" />{% endif %}
+          <span>{{ b.name }}</span>
+        </a>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="vehicle-slider-wrap">
+      <div class="vehicle-slider-track">
+        {% for v in vehicles %}
+          {{ vehicle_card(v) }}
+        {% else %}
+          <div class="empty-state">표시할 차량이 없습니다.</div>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/hero.js') }}"></script>
+<script src="{{ url_for('static', filename='js/slider.js') }}"></script>
+{% endblock %}

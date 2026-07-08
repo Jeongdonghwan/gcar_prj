@@ -1,0 +1,69 @@
+:root {
+  /* Surface */
+  --bg: #FFFFFF;
+  --surface: #F4F6F9;
+  --surface-2: #EDF0F5;
+
+  /* Text */
+  --ink: #111111;
+  --ink-2: #4B5563;
+  --muted: #8B92A0;
+
+  /* Lines */
+  --line: #E5E7EB;
+  --line-2: #EEF1F5;
+
+  /* Brand — Great Car 골드 */
+  --primary: #D4A429;
+  --primary-soft: #FDF6E3;
+  --primary-deep: #8A6F3E;
+  --primary-glow: #E9B94A;
+
+  /* Functional */
+  --warn: #FF6A3D;
+  --success: #1FA363;
+
+  /* Kakao */
+  --kakao: #FEE500;
+  --kakao-ink: #3A1D1D;
+
+  /* Radius */
+  --radius-card: 20px;
+  --radius-sm: 12px;
+  --radius-pill: 999px;
+
+  /* Shadow */
+  --shadow-card: 0 4px 16px rgba(17,17,17,0.06);
+  --shadow-float: 0 6px 18px rgba(0,0,0,0.12);
+  --shadow-pop: 0 16px 40px rgba(17,17,17,0.10);
+
+  /* Spacing */
+  --container-max: 1280px;
+  --gap-card: 20px;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  font-size: 15px;
+  line-height: 1.55;
+  letter-spacing: -0.01em;
+  -webkit-font-smoothing: antialiased;
+  font-variant-numeric: tabular-nums;
+}
+
+h1, h2, h3, h4 {
+  letter-spacing: -0.025em;
+  line-height: 1.2;
+  margin: 0;
+}
+
+a { color: inherit; text-decoration: none; }
+button { font-family: inherit; cursor: pointer; }
+img { max-width: 100%; height: auto; display: block; }
+input, textarea, select { font-family: inherit; }

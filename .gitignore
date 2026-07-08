@@ -1,0 +1,43 @@
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+venv/
+env/
+*.egg-info/
+
+# Flask / instance
+instance/.env
+instance/*.sqlite
+instance/*.db
+
+# Uploads (관리자가 어드민에서 업로드하는 파일 — 서버·오브젝트 스토리지에서 관리)
+app/static/uploads/_tmp/
+app/static/uploads/vehicles/
+app/static/uploads/brands/
+app/static/uploads/banners/
+
+# 로고 원본 (프로젝트 루트에 두고 임의 관리)
+로고.png
+
+# 시크릿·크리덴셜
+instance/.env
+*.env
+*.pem
+*.key
+
+# IDE
+.vscode/
+.idea/
+*.swp
+.DS_Store
+
+# Tests
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Migrations alembic
+migrations/__pycache__/

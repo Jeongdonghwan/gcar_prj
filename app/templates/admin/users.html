@@ -1,0 +1,23 @@
+{% extends 'admin/admin_base.html' %}
+{% block crumb %}회원 관리{% endblock %}
+{% block page_title %}회원 관리{% endblock %}
+{% block content %}
+<table class="data-table">
+  <thead><tr><th>ID</th><th>이메일</th><th>이름</th><th>휴대전화</th><th>카카오</th><th>관리자</th><th>가입일</th></tr></thead>
+  <tbody>
+    {% for u in users %}
+    <tr>
+      <td>#{{ u.id }}</td>
+      <td>{{ u.email or '-' }}</td>
+      <td>{{ u.name or '-' }}</td>
+      <td>{{ u.phone or '-' }}</td>
+      <td>{{ '예' if u.kakao_id else '' }}</td>
+      <td>{{ '예' if u.is_admin else '' }}</td>
+      <td>{{ u.created_at | date_kr }}</td>
+    </tr>
+    {% else %}
+    <tr><td colspan="7" style="color:var(--muted);text-align:center;padding:24px;">회원이 없습니다.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

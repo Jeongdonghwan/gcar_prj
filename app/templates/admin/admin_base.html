@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="csrf-token" content="{{ csrf_token() }}" />
+  <title>{% block title %}어드민 — Great Car{% endblock %}</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/tokens.css') }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/site.css') }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}" />
+  {% block extra_head %}{% endblock %}
+</head>
+<body class="no-floating">
+  <div class="admin-shell">
+    <aside class="admin-side">
+      <div class="brand">
+        <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Great Car" style="height:32px;vertical-align:middle;" />
+        <span class="tag">ADMIN</span>
+      </div>
+      <nav class="admin-nav">
+        <a href="{{ url_for('admin.dashboard') }}" class="{% if request.endpoint == 'admin.dashboard' %}is-active{% endif %}">대시보드</a>
+        <a href="{{ url_for('admin.vehicles') }}" class="{% if request.endpoint == 'admin.vehicles' %}is-active{% endif %}">차량 목록</a>
+        <a href="{{ url_for('admin.vehicles_new') }}" class="{% if request.endpoint == 'admin.vehicles_new' %}is-active{% endif %}">차량 등록</a>
+        <a href="{{ url_for('admin.brands') }}" class="{% if request.endpoint and 'brand' in request.endpoint %}is-active{% endif %}">브랜드 관리</a>
+        <a href="{{ url_for('admin.upcoming_order') }}" class="{% if request.endpoint == 'admin.upcoming_order' %}is-active{% endif %}">업커밍 순서</a>
+        <a href="{{ url_for('admin.banners') }}" class="{% if request.endpoint and 'banner' in request.endpoint %}is-active{% endif %}">배너 관리</a>
+        <a href="{{ url_for('admin.notices') }}" class="{% if request.endpoint and 'notice' in request.endpoint %}is-active{% endif %}">공지사항</a>
+        <a href="{{ url_for('admin.faq_list') }}" class="{% if request.endpoint and 'faq' in request.endpoint %}is-active{% endif %}">FAQ</a>
+        <a href="{{ url_for('admin.users') }}" class="{% if request.endpoint == 'admin.users' %}is-active{% endif %}">회원 관리</a>
+        <a href="{{ url_for('admin.settings') }}" class="{% if request.endpoint == 'admin.settings' %}is-active{% endif %}">설정</a>
+      </nav>
+      <div class="admin-user-box">
+        <div>{{ current_user.name or current_user.email }}</div>
+        <form method="post" action="{{ url_for('auth.logout') }}" style="margin-top:6px;">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+          <button type="submit" style="background:none;border:none;color:var(--muted);font-size:12px;cursor:pointer;padding:0;">로그아웃</button>
+        </form>
+        <a href="{{ url_for('public.index') }}" style="font-size:12px;color:var(--muted);">사이트 보기 ↗</a>
+      </div>
+    </aside>
+    <section class="admin-main">
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          <div class="flash-stack">
+            {% for category, message in messages %}
+              <div class="flash {{ category }}">{{ message }}</div>
+            {% endfor %}
+          </div>
+        {% endif %}
+      {% endwith %}
+      <div class="admin-bar">
+        <div>
+          <div class="admin-crumb">{% block crumb %}{% endblock %}</div>
+          <h1>{% block page_title %}{% endblock %}</h1>
+        </div>
+        <div class="admin-actions">{% block actions %}{% endblock %}</div>
+      </div>
+      {% block content %}{% endblock %}
+    </section>
+  </div>
+
+  <script src="{{ url_for('static', filename='js/common.js') }}"></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

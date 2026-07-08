@@ -1,0 +1,31 @@
+{% extends 'admin/admin_base.html' %}
+{% block crumb %}대시보드{% endblock %}
+{% block page_title %}대시보드{% endblock %}
+{% block content %}
+<div class="kpi-grid">
+  <div class="kpi-card"><div class="label">전체 차량</div><div class="value">{{ counts.vehicles }}</div></div>
+  <div class="kpi-card"><div class="label">공개 차량</div><div class="value">{{ counts.vehicles_public }}</div></div>
+  <div class="kpi-card"><div class="label">업커밍 슬롯</div><div class="value">{{ counts.upcoming }}</div></div>
+  <div class="kpi-card"><div class="label">활성 회원</div><div class="value">{{ counts.users }}</div></div>
+</div>
+
+<h2 style="margin:32px 0 12px;font-size:18px;">최근 등록 차량</h2>
+<table class="data-table">
+  <thead><tr><th>ID</th><th>브랜드</th><th>모델</th><th>가격(만원)</th><th>노출</th><th>등록일</th><th></th></tr></thead>
+  <tbody>
+    {% for v in recent %}
+    <tr>
+      <td>#{{ v.id }}</td>
+      <td>{{ v.brand_name }}</td>
+      <td>{{ v.model }}</td>
+      <td>{{ v.price_min_man or '-' }}{% if v.price_max_man and v.price_max_man != v.price_min_man %} ~ {{ v.price_max_man }}{% endif %}</td>
+      <td>{{ v.visibility }}</td>
+      <td>{{ v.created_at | date_kr }}</td>
+      <td class="actions"><a href="{{ url_for('admin.vehicles_edit', vehicle_id=v.id) }}">수정</a></td>
+    </tr>
+    {% else %}
+    <tr><td colspan="7" style="color:var(--muted);text-align:center;padding:24px;">등록된 차량이 없습니다.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

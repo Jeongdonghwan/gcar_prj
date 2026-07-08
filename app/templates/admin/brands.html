@@ -1,0 +1,40 @@
+{% extends 'admin/admin_base.html' %}
+{% block crumb %}브랜드 관리{% endblock %}
+{% block page_title %}브랜드 목록{% endblock %}
+{% block actions %}
+  <a class="btn btn-primary" href="{{ url_for('admin.brands_new') }}">+ 새 브랜드</a>
+{% endblock %}
+{% block content %}
+<p style="color:var(--ink-2);font-size:14px;margin-bottom:16px;">
+  차량이 사용하는 브랜드 마스터입니다. 브랜드 등록 후 편집 페이지에서 공식 로고 파일(PNG/WebP)을 업로드하면 사이트 전역의 브랜드 pill에 자동 반영됩니다.
+</p>
+<table class="data-table">
+  <thead><tr><th>순서</th><th>로고</th><th>이름</th><th>슬러그</th><th>공개</th><th></th></tr></thead>
+  <tbody>
+    {% for b in brands %}
+    <tr>
+      <td>{{ b.sort_order }}</td>
+      <td>
+        {% if b.logo_path %}
+          <img src="{{ b.logo_path }}" alt="" style="width:44px;height:44px;object-fit:contain;border-radius:8px;background:#fff;border:1px solid var(--line);" />
+        {% else %}
+          <span style="color:var(--muted);font-size:12px;">-</span>
+        {% endif %}
+      </td>
+      <td><strong>{{ b.name }}</strong></td>
+      <td style="color:var(--muted);font-size:13px;">{{ b.slug }}</td>
+      <td>{{ '예' if b.is_visible else '숨김' }}</td>
+      <td class="actions">
+        <a href="{{ url_for('admin.brands_edit', brand_id=b.id) }}">수정</a>
+        <form method="post" action="{{ url_for('admin.brands_delete', brand_id=b.id) }}" onsubmit="return confirm('삭제할까요? (해당 브랜드를 사용하는 차량이 없어야 합니다)');" style="display:inline;">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+          <button type="submit" style="background:none;border:none;color:var(--warn);cursor:pointer;">삭제</button>
+        </form>
+      </td>
+    </tr>
+    {% else %}
+    <tr><td colspan="6" style="color:var(--muted);text-align:center;padding:24px;">등록된 브랜드가 없습니다.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

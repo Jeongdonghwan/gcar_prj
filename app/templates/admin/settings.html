@@ -1,0 +1,22 @@
+{% extends 'admin/admin_base.html' %}
+{% block crumb %}설정{% endblock %}
+{% block page_title %}사이트 설정{% endblock %}
+{% block content %}
+<form method="post">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+  <fieldset class="form-set">
+    <legend>카카오 1:1 채널</legend>
+    <div class="form-grid">
+      <div class="form-field full">
+        <label>카카오 채널 URL</label>
+        <input type="url" name="kakao_channel_url" value="{{ kakao_channel_url }}" placeholder="https://pf.kakao.com/_xxxxx/chat" />
+        <p style="margin-top:6px;color:var(--muted);font-size:12px;">모든 공개 페이지의 플로팅·CTA 버튼이 이 URL로 연결됩니다.</p>
+      </div>
+    </div>
+  </fieldset>
+  <div class="form-actions">
+    <div></div>
+    <button class="btn btn-primary" type="submit">저장</button>
+  </div>
+</form>
+{% endblock %}

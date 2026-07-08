@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+<title>디자인 초안 모음 · GARAGE Project</title>
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet">
+<style>
+:root {
+  --bg: #FFFFFF; --surface: #F4F6F9; --surface-2: #EDF0F5;
+  --ink: #111111; --ink-2: #4B5563; --muted: #8B92A0;
+  --line: #E5E7EB;
+  --primary: #3B6EF5; --primary-soft: #E8F0FF;
+  --warn: #FF6A3D;
+  --kakao: #FEE500;
+  --radius-card: 20px; --radius-sm: 12px; --radius-pill: 999px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { background: var(--bg); color: var(--ink); font-family: 'Pretendard', sans-serif; -webkit-font-smoothing: antialiased; font-feature-settings: "ss01","tnum"; }
+a { color: inherit; text-decoration: none; }
+
+.wrap { max-width: 1280px; margin: 0 auto; padding: 32px 20px 80px; }
+@media (min-width: 1024px) { .wrap { padding: 56px 32px 120px; } }
+
+/* HERO */
+.hero { background: linear-gradient(135deg, #E8F0FF 0%, #F0EEFF 100%); border-radius: 24px; padding: 36px 24px; margin-bottom: 40px; position: relative; overflow: hidden; }
+@media (min-width: 1024px) { .hero { padding: 64px 56px; margin-bottom: 56px; } }
+.hero__label { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; background: white; border-radius: var(--radius-pill); font-size: 12px; font-weight: 600; color: var(--primary); margin-bottom: 16px; }
+.hero__label::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--primary); animation: pulse 2s infinite; }
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+.hero__title { font-size: 32px; font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; margin-bottom: 12px; }
+@media (min-width: 1024px) { .hero__title { font-size: 52px; } }
+.hero__title em { font-style: normal; color: var(--primary); }
+.hero__sub { font-size: 14px; color: var(--ink-2); line-height: 1.6; max-width: 60ch; }
+@media (min-width: 1024px) { .hero__sub { font-size: 16px; } }
+.hero__meta { display: flex; gap: 12px; margin-top: 24px; flex-wrap: wrap; }
+.hero__meta-item { background: white; padding: 10px 16px; border-radius: var(--radius-pill); font-size: 12px; font-weight: 600; color: var(--ink-2); display: inline-flex; align-items: center; gap: 6px; }
+.hero__meta-item strong { color: var(--ink); }
+
+/* PALETTE */
+.palette { display: flex; gap: 10px; margin-top: 24px; flex-wrap: wrap; }
+.swatch { width: 48px; height: 48px; border-radius: 12px; position: relative; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+.swatch::after { position: absolute; top: 100%; left: 0; right: 0; margin-top: 6px; font-size: 10px; color: var(--muted); font-weight: 600; text-align: center; }
+.swatch.s1 { background: #F4F6F9; } .swatch.s1::after { content: 'Surface'; }
+.swatch.s2 { background: #111111; } .swatch.s2::after { content: 'Ink'; }
+.swatch.s3 { background: #3B6EF5; } .swatch.s3::after { content: 'Primary'; }
+.swatch.s4 { background: #FF6A3D; } .swatch.s4::after { content: 'Warn'; }
+.swatch.s5 { background: #FEE500; } .swatch.s5::after { content: 'Kakao'; }
+
+/* SPEC CARD */
+.spec-card { background: var(--ink); color: white; border-radius: var(--radius-card); padding: 28px 24px; margin-bottom: 32px; display: flex; gap: 24px; align-items: center; flex-wrap: wrap; transition: transform 200ms; }
+@media (min-width: 1024px) { .spec-card { padding: 36px 40px; margin-bottom: 48px; } }
+.spec-card:hover { transform: translateY(-2px); }
+.spec-card__icon { width: 56px; height: 56px; background: var(--kakao); color: var(--ink); border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 800; flex-shrink: 0; }
+.spec-card__body { flex: 1; min-width: 240px; }
+.spec-card__title { font-size: 20px; font-weight: 800; letter-spacing: -0.025em; margin-bottom: 4px; }
+@media (min-width: 1024px) { .spec-card__title { font-size: 24px; } }
+.spec-card__desc { font-size: 13px; color: rgba(255,255,255,0.7); line-height: 1.55; }
+.spec-card__btn { background: white; color: var(--ink); padding: 12px 22px; border-radius: var(--radius-pill); font-size: 13px; font-weight: 700; display: inline-flex; align-items: center; gap: 6px; transition: background 160ms; }
+.spec-card__btn:hover { background: var(--kakao); }
+.spec-card__btn::after { content: '→'; }
+
+/* SECTION */
+.section { margin-bottom: 48px; }
+.section__head { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid var(--line); }
+.section__num { width: 28px; height: 28px; background: var(--ink); color: white; border-radius: 50%; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+.section__title { font-size: 20px; font-weight: 800; letter-spacing: -0.025em; }
+@media (min-width: 1024px) { .section__title { font-size: 24px; } }
+.section__count { font-size: 12px; color: var(--muted); margin-left: auto; font-weight: 600; }
+
+/* GRID */
+.grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
+@media (min-width: 640px) { .grid { grid-template-columns: repeat(2, 1fr); gap: 14px; } }
+@media (min-width: 1024px) { .grid { grid-template-columns: repeat(3, 1fr); gap: 16px; } }
+
+/* CARD */
+.card { background: var(--surface); border-radius: var(--radius-card); padding: 22px; display: flex; flex-direction: column; cursor: pointer; transition: background 180ms, transform 180ms; min-height: 200px; position: relative; overflow: hidden; }
+.card:hover { background: var(--surface-2); transform: translateY(-2px); }
+
+.card__num { font-size: 11px; color: var(--muted); font-weight: 700; letter-spacing: 0.05em; margin-bottom: 12px; }
+.card__title { font-size: 18px; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 4px; }
+.card__title em { font-style: normal; color: var(--primary); }
+.card__path { font-size: 11px; color: var(--muted); font-weight: 500; margin-bottom: 12px; padding: 4px 8px; background: white; display: inline-block; border-radius: 5px; align-self: flex-start; font-variant-numeric: tabular-nums; }
+.card__desc { font-size: 13px; color: var(--ink-2); line-height: 1.55; margin-bottom: 16px; flex: 1; }
+.card__cta { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 700; color: var(--ink); padding-bottom: 2px; border-bottom: 2px solid var(--ink); align-self: flex-start; transition: gap 160ms; }
+.card:hover .card__cta { gap: 8px; }
+.card__cta::after { content: '→'; }
+
+/* ADMIN CARDS */
+.card.is-admin { background: var(--ink); color: white; }
+.card.is-admin:hover { background: #1A1A1A; }
+.card.is-admin .card__num { color: rgba(255,255,255,0.5); }
+.card.is-admin .card__path { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.7); }
+.card.is-admin .card__title em { color: #7AA0FF; }
+.card.is-admin .card__desc { color: rgba(255,255,255,0.7); }
+.card.is-admin .card__cta { color: var(--kakao); border-color: var(--kakao); }
+
+/* CARD WITH PREVIEW BADGE */
+.card__preview { position: absolute; top: 16px; right: 16px; font-size: 10px; font-weight: 700; padding: 4px 8px; background: var(--primary); color: white; border-radius: 4px; }
+.card__preview.is-key { background: var(--warn); }
+
+/* FOOT */
+.foot { margin-top: 56px; padding-top: 24px; border-top: 1px solid var(--line); display: flex; gap: 20px; flex-wrap: wrap; font-size: 12px; color: var(--muted); }
+.foot strong { color: var(--ink); font-weight: 600; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- HERO -->
+  <header class="hero">
+    <span class="hero__label">Design Drafts · v4 Final</span>
+    <h1 class="hero__title">차량 구독 플랫폼<br/><em>GARAGE</em></h1>
+    <p class="hero__sub">rerev 스타일을 그대로 따른 친근한 쇼핑몰 톤의 차량 구독·렌트 플랫폼 디자인 초안 모음입니다.<br/>모든 페이지는 단일 HTML로 작성되어 Claude Code에서 React/Jinja2로 옮겨 풀스택 구현할 수 있습니다.</p>
+    <div class="hero__meta">
+      <span class="hero__meta-item"><strong>7</strong> 페이지</span>
+      <span class="hero__meta-item"><strong>Flask + MariaDB</strong></span>
+      <span class="hero__meta-item"><strong>Pretendard</strong> 단일 폰트</span>
+      <span class="hero__meta-item">PC 슬라이더 · 모바일 스택</span>
+    </div>
+    <div class="palette">
+      <div class="swatch s1"></div>
+      <div class="swatch s2"></div>
+      <div class="swatch s3"></div>
+      <div class="swatch s4"></div>
+      <div class="swatch s5"></div>
+    </div>
+  </header>
+
+  <!-- SPEC -->
+  <a href="PROJECT_SPEC_v4.md" class="spec-card" target="_blank">
+    <div class="spec-card__icon">MD</div>
+    <div class="spec-card__body">
+      <h2 class="spec-card__title">PROJECT_SPEC_v4.md</h2>
+      <p class="spec-card__desc">개발 명세서 · 디자인 시스템, 데이터 모델, API 엔드포인트, 카카오 OAuth, 스프린트 계획. Claude Code 인계용 단일 진실 공급원.</p>
+    </div>
+    <span class="spec-card__btn">문서 열기</span>
+  </a>
+
+  <!-- PUBLIC PAGES -->
+  <section class="section">
+    <header class="section__head">
+      <span class="section__num">1</span>
+      <h2 class="section__title">사용자 페이지</h2>
+      <span class="section__count">5개</span>
+    </header>
+    <div class="grid">
+
+      <a href="v4-index.html" class="card" target="_blank">
+        <span class="card__preview is-key">★ KEY</span>
+        <span class="card__num">No. 01</span>
+        <h3 class="card__title">메인 <em>(컬렉션)</em></h3>
+        <span class="card__path">/</span>
+        <p class="card__desc">히어로 롤링 배너, 빠른 진입 카드 4개, 차량 둘러보기. PC에서는 2열×2행 슬라이더로 좌우 페이지 이동.</p>
+        <span class="card__cta">디자인 보기</span>
+      </a>
+
+      <a href="v4-vehicle-detail.html" class="card" target="_blank">
+        <span class="card__num">No. 02</span>
+        <h3 class="card__title">차량 <em>상세</em></h3>
+        <span class="card__path">/vehicles/:id</span>
+        <p class="card__desc">갤러리, 스펙, 비교 테이블, 이용 절차, FAQ. PC 사이드 sticky 카카오 패널, 모바일 하단 고정 CTA.</p>
+        <span class="card__cta">디자인 보기</span>
+      </a>
+
+      <a href="v4-upcoming.html" class="card" target="_blank">
+        <span class="card__num">No. 03</span>
+        <h3 class="card__title">업커밍 <em>리스트</em></h3>
+        <span class="card__path">/upcoming</span>
+        <p class="card__desc">두 그룹(1달 내 / 그 밖에) 카드 그리드. 어드민이 정렬한 순서대로 렌더링. 출고 알림 CTA 배너.</p>
+        <span class="card__cta">디자인 보기</span>
+      </a>
+
+      <a href="v4-faq.html" class="card" target="_blank">
+        <span class="card__num">No. 04</span>
+        <h3 class="card__title">고객 <em>센터</em></h3>
+        <span class="card__path">/faq</span>
+        <p class="card__desc">검정 카카오 카드 + 공지사항 2단 그리드. 카테고리 칩 + FAQ 아코디언.</p>
+        <span class="card__cta">디자인 보기</span>
+      </a>
+
+      <a href="v4-auth.html" class="card" target="_blank">
+        <span class="card__num">No. 05</span>
+        <h3 class="card__title">로그인 <em>· 회원가입</em></h3>
+        <span class="card__path">/login · /signup</span>
+        <p class="card__desc">좌측 비주얼 + 우측 폼. 세그먼트 탭으로 전환. 카카오싱크 우선, 이메일 보조.</p>
+        <span class="card__cta">디자인 보기</span>
+      </a>
+
+    </div>
+  </section>
+
+  <!-- ADMIN -->
+  <section class="section">
+    <header class="section__head">
+      <span class="section__num">2</span>
+      <h2 class="section__title">관리자 페이지</h2>
+      <span class="section__count">2개</span>
+    </header>
+    <div class="grid">
+
+      <a href="v4-admin-vehicle-new.html" class="card is-admin" target="_blank">
+        <span class="card__num">No. 06</span>
+        <h3 class="card__title">차량 <em>등록</em></h3>
+        <span class="card__path">/admin/vehicles/new</span>
+        <p class="card__desc">5개 필드 그룹 (기본정보 / 가격·노출 / 이미지 / 설명 / 옵션). 토글, 알약 라디오, 드래그 썸네일.</p>
+        <span class="card__cta">디자인 보기</span>
+      </a>
+
+      <a href="v4-admin-upcoming-order.html" class="card is-admin" target="_blank">
+        <span class="card__preview is-key">★ KEY</span>
+        <span class="card__num">No. 07</span>
+        <h3 class="card__title">업커밍 <em>순서 관리</em></h3>
+        <span class="card__path">/admin/upcoming/order</span>
+        <p class="card__desc">SortableJS 기반 두 컬럼 드래그앤드롭. 그룹 간 이동 가능, 자동 저장 + 토스트. 핵심 기능.</p>
+        <span class="card__cta">디자인 보기</span>
+      </a>
+
+    </div>
+  </section>
+
+  <footer class="foot">
+    <span><strong>Design:</strong> rerev-inspired e-commerce</span>
+    <span><strong>Typography:</strong> Pretendard</span>
+    <span><strong>Stack:</strong> Flask + MariaDB + React</span>
+    <span><strong>Updated:</strong> 2026.05</span>
+  </footer>
+
+</div>
+</body>
+</html>

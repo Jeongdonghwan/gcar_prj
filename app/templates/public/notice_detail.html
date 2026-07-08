@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block title %}{{ notice.title }} — Great Car{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top:24px;max-width:760px;">
+  <a href="{{ url_for('public.notices') }}" style="color:var(--muted);font-size:13px;">← 공지사항</a>
+  <h1 style="margin:12px 0 4px;font-size:26px;">{{ notice.title }}</h1>
+  <p style="color:var(--muted);font-size:13px;">{{ notice.created_at | date_kr }}</p>
+  <article style="margin-top:24px;line-height:1.7;color:var(--ink-2);white-space:pre-wrap;">{{ notice.body }}</article>
+</div>
+{% endblock %}

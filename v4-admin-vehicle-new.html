@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+<title>차량 등록 · 관리자</title>
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet">
+<style>
+:root {
+  --bg: #FFFFFF; --surface: #F4F6F9; --surface-2: #EDF0F5; --surface-3: #E5E9F0;
+  --ink: #111111; --ink-2: #4B5563; --muted: #8B92A0;
+  --line: #E5E7EB; --line-2: #EEF1F5;
+  --primary: #3B6EF5; --primary-soft: #E8F0FF;
+  --warn: #FF6A3D; --success: #1FA363; --success-soft: #E6F7EE;
+  --radius-card: 16px; --radius-sm: 10px; --radius-pill: 999px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { background: var(--surface); color: var(--ink); font-family: 'Pretendard', sans-serif; -webkit-font-smoothing: antialiased; font-feature-settings: "ss01","tnum"; min-height: 100vh; }
+a { color: inherit; text-decoration: none; }
+button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; padding: 0; }
+input, select, textarea { font-family: inherit; }
+img { display: block; max-width: 100%; }
+
+/* SHELL */
+.admin { display: grid; grid-template-columns: 1fr; min-height: 100vh; }
+@media (min-width: 1024px) { .admin { grid-template-columns: 240px 1fr; } }
+
+/* SIDEBAR */
+.side { background: white; border-right: 1px solid var(--line); padding: 24px 16px; display: none; }
+@media (min-width: 1024px) { .side { display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh; } }
+.side__logo { font-size: 22px; font-weight: 800; letter-spacing: -0.04em; color: var(--primary); margin-bottom: 4px; padding: 0 8px; }
+.side__logo em { font-style: normal; color: var(--ink); }
+.side__role { font-size: 11px; color: var(--muted); font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 28px; padding: 0 8px; }
+.side__group-label { font-size: 11px; color: var(--muted); font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; margin: 20px 8px 6px; }
+.side__nav { display: flex; flex-direction: column; gap: 2px; }
+.side__link { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px; font-size: 13.5px; font-weight: 500; color: var(--ink-2); transition: background 160ms; }
+.side__link:hover { background: var(--surface); color: var(--ink); }
+.side__link.is-active { background: var(--ink); color: white; font-weight: 600; }
+.side__link svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 1.8; flex-shrink: 0; }
+.side__user { margin-top: auto; padding: 16px 12px; border-top: 1px solid var(--line); display: flex; align-items: center; gap: 10px; }
+.side__avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px; }
+.side__user-name { font-size: 13px; font-weight: 600; }
+.side__user-role { font-size: 11px; color: var(--muted); font-weight: 500; }
+
+/* MAIN */
+.main { background: var(--surface); min-width: 0; }
+
+.topbar { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; background: white; border-bottom: 1px solid var(--line); position: sticky; top: 0; z-index: 30; }
+@media (min-width: 1024px) { .topbar { padding: 16px 32px; } }
+.crumb { font-size: 12px; color: var(--muted); font-weight: 500; }
+.crumb a:hover { color: var(--ink); }
+.crumb span { margin: 0 6px; opacity: 0.5; }
+.crumb .now { color: var(--ink); }
+.topbar-actions { display: flex; gap: 8px; }
+.btn-secondary { font-size: 13px; font-weight: 600; padding: 9px 16px; background: white; border: 1.5px solid var(--line); border-radius: 10px; transition: border-color 160ms; }
+.btn-secondary:hover { border-color: var(--ink); }
+.btn-primary { font-size: 13px; font-weight: 700; padding: 9px 16px; background: var(--ink); color: white; border-radius: 10px; transition: background 160ms; }
+.btn-primary:hover { background: var(--primary); }
+
+/* PAGE */
+.page-head { padding: 28px 20px 20px; }
+@media (min-width: 1024px) { .page-head { padding: 40px 32px 24px; max-width: 1100px; } }
+.page-title { font-size: 24px; font-weight: 800; letter-spacing: -0.025em; margin-bottom: 4px; }
+@media (min-width: 1024px) { .page-title { font-size: 32px; } }
+.page-desc { font-size: 13px; color: var(--ink-2); }
+
+.form { padding: 0 20px 100px; }
+@media (min-width: 1024px) { .form { padding: 0 32px 120px; max-width: 1100px; } }
+
+.fieldset { background: white; border-radius: var(--radius-card); padding: 24px; margin-bottom: 14px; border: 1px solid var(--line); }
+@media (min-width: 1024px) { .fieldset { padding: 28px 32px; margin-bottom: 16px; } }
+.fieldset__head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid var(--line); }
+.fieldset__num { width: 26px; height: 26px; border-radius: 50%; background: var(--ink); color: white; font-size: 12px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.fieldset__title { font-size: 16px; font-weight: 700; letter-spacing: -0.015em; }
+.fieldset__desc { font-size: 12px; color: var(--muted); margin-left: auto; }
+@media (max-width: 639px) { .fieldset__desc { display: none; } }
+
+.grid-2 { display: grid; gap: 16px; grid-template-columns: 1fr; }
+@media (min-width: 640px) { .grid-2 { grid-template-columns: 1fr 1fr; } }
+.grid-3 { display: grid; gap: 16px; grid-template-columns: 1fr; }
+@media (min-width: 640px) { .grid-3 { grid-template-columns: 1fr 1fr; } }
+@media (min-width: 1024px) { .grid-3 { grid-template-columns: 1fr 1fr 1fr; } }
+
+.f-field { display: flex; flex-direction: column; gap: 6px; }
+.f-label { font-size: 12px; font-weight: 600; color: var(--ink-2); letter-spacing: -0.005em; }
+.f-label .req { color: var(--warn); margin-left: 2px; }
+.f-input, .f-select, .f-textarea { background: var(--surface); border: 1.5px solid transparent; border-radius: 10px; padding: 11px 14px; font-size: 14px; color: var(--ink); transition: all 160ms; }
+.f-input:focus, .f-select:focus, .f-textarea:focus { outline: none; background: white; border-color: var(--primary); }
+.f-input::placeholder { color: var(--muted); }
+.f-textarea { resize: vertical; min-height: 120px; line-height: 1.6; }
+.f-select { appearance: none; padding-right: 36px; background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3e%3cpath d='M1 1l4 4 4-4' stroke='%23111' fill='none' stroke-width='1.5'/%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 14px center; cursor: pointer; }
+.f-hint { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+/* PILLS */
+.pill-group { display: flex; flex-wrap: wrap; gap: 8px; }
+.pill { padding: 10px 18px; background: var(--surface); border: 1.5px solid transparent; border-radius: var(--radius-pill); font-size: 13px; font-weight: 600; color: var(--ink-2); transition: all 160ms; display: inline-flex; align-items: center; gap: 6px; }
+.pill:hover { border-color: var(--line); }
+.pill.is-active { background: var(--ink); color: white; }
+.pill .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--success); }
+.pill.up .dot { background: var(--primary); }
+.pill.hidden .dot { background: var(--muted); }
+.pill.sold .dot { background: var(--warn); }
+.pill.is-active .dot { background: white; }
+
+/* TOGGLES */
+.toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 14px 0; border-bottom: 1px solid var(--line-2); }
+.toggle-row:last-child { border-bottom: none; }
+.toggle-row__label { font-size: 14px; font-weight: 600; }
+.toggle-row__desc { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.toggle { width: 42px; height: 24px; background: var(--line); border-radius: var(--radius-pill); position: relative; cursor: pointer; transition: background 200ms; flex-shrink: 0; }
+.toggle::after { content: ''; position: absolute; top: 2px; left: 2px; width: 20px; height: 20px; background: white; border-radius: 50%; transition: transform 200ms; box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
+.toggle.is-on { background: var(--primary); }
+.toggle.is-on::after { transform: translateX(18px); }
+
+/* DROPZONE */
+.dropzone { border: 2px dashed var(--line); border-radius: var(--radius-card); padding: 40px 20px; text-align: center; cursor: pointer; transition: all 160ms; margin-bottom: 16px; background: var(--surface); }
+.dropzone:hover { border-color: var(--primary); background: var(--primary-soft); }
+.dropzone__icon { width: 40px; height: 40px; background: white; border-radius: 50%; margin: 0 auto 12px; display: flex; align-items: center; justify-content: center; color: var(--primary); }
+.dropzone__icon svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2; }
+.dropzone__title { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+.dropzone__sub { font-size: 12px; color: var(--muted); }
+.dropzone__sub strong { color: var(--ink-2); font-weight: 600; }
+
+.thumbs { display: grid; gap: 10px; grid-template-columns: repeat(2, 1fr); }
+@media (min-width: 768px) { .thumbs { grid-template-columns: repeat(4, 1fr); } }
+@media (min-width: 1280px) { .thumbs { grid-template-columns: repeat(6, 1fr); } }
+.thumb { position: relative; aspect-ratio: 4/3; background: var(--surface); border-radius: var(--radius-sm); overflow: hidden; cursor: grab; }
+.thumb img { width: 100%; height: 100%; object-fit: cover; }
+.thumb__order { position: absolute; top: 8px; left: 8px; background: rgba(17,17,17,0.85); color: white; font-size: 10px; font-weight: 700; padding: 3px 7px; border-radius: 5px; }
+.thumb__primary { position: absolute; top: 8px; right: 8px; background: var(--primary); color: white; font-size: 9px; font-weight: 700; padding: 3px 6px; border-radius: 5px; letter-spacing: 0.02em; }
+.thumb__remove { position: absolute; bottom: 8px; right: 8px; width: 24px; height: 24px; border-radius: 50%; background: rgba(17,17,17,0.85); color: white; display: inline-flex; align-items: center; justify-content: center; font-size: 14px; line-height: 1; }
+
+/* OPTIONS */
+.opts { display: grid; gap: 8px; grid-template-columns: repeat(2, 1fr); }
+@media (min-width: 640px) { .opts { grid-template-columns: repeat(3, 1fr); } }
+@media (min-width: 1024px) { .opts { grid-template-columns: repeat(4, 1fr); } }
+.opt { display: flex; align-items: center; gap: 8px; padding: 12px 14px; background: var(--surface); border: 1.5px solid transparent; border-radius: 10px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 160ms; }
+.opt:hover { border-color: var(--line); }
+.opt input { display: none; }
+.opt .box { width: 16px; height: 16px; border-radius: 4px; border: 1.5px solid var(--line); background: white; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.opt input:checked + .box { background: var(--primary); border-color: var(--primary); }
+.opt input:checked + .box::after { content: '✓'; color: white; font-size: 10px; font-weight: 700; }
+.opt:has(input:checked) { background: var(--primary-soft); border-color: var(--primary); color: var(--ink); font-weight: 600; }
+
+/* STICKY FOOTER */
+.form-actions { position: sticky; bottom: 0; margin: 14px -20px 0; padding: 14px 20px; background: white; border-top: 1px solid var(--line); display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+@media (min-width: 1024px) { .form-actions { margin: 16px -32px 0; padding: 16px 32px; } }
+.form-actions__info { font-size: 12px; color: var(--muted); display: inline-flex; align-items: center; gap: 6px; }
+.form-actions__info::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--success); animation: pulse 2s infinite; }
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+.form-actions__buttons { display: flex; gap: 8px; }
+</style>
+</head>
+<body>
+
+<div class="admin">
+
+  <aside class="side">
+    <div class="side__logo">GA<em>:RAGE</em></div>
+    <div class="side__role">Admin</div>
+
+    <nav class="side__nav">
+      <a href="/admin" class="side__link">
+        <svg viewBox="0 0 24 24"><path d="M3 9l9-6 9 6v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/></svg>
+        대시보드
+      </a>
+      <div class="side__group-label">차량 관리</div>
+      <a href="/admin/vehicles" class="side__link">
+        <svg viewBox="0 0 24 24"><path d="M3 13l2-5h14l2 5M5 13h14v5H5z M7 18v2 M17 18v2"/></svg>
+        차량 목록
+      </a>
+      <a href="/admin/vehicles/new" class="side__link is-active">
+        <svg viewBox="0 0 24 24"><path d="M12 5v14 M5 12h14"/></svg>
+        차량 등록
+      </a>
+      <a href="/admin/upcoming/order" class="side__link">
+        <svg viewBox="0 0 24 24"><path d="M3 6h13 M3 12h13 M3 18h13 M20 5l-3 3 3 3 M20 13l-3 3 3 3"/></svg>
+        업커밍 순서
+      </a>
+      <div class="side__group-label">콘텐츠</div>
+      <a href="/admin/notices" class="side__link">
+        <svg viewBox="0 0 24 24"><path d="M5 4h14v16H5z M9 9h6 M9 13h6 M9 17h4"/></svg>
+        공지사항
+      </a>
+      <a href="/admin/faq" class="side__link">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 015 0c0 1.5-2.5 2-2.5 3.5 M12 17h.01"/></svg>
+        FAQ
+      </a>
+      <div class="side__group-label">기타</div>
+      <a href="/admin/users" class="side__link">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20a8 8 0 0116 0"/></svg>
+        회원 관리
+      </a>
+    </nav>
+
+    <div class="side__user">
+      <div class="side__avatar">J</div>
+      <div>
+        <div class="side__user-name">JDH</div>
+        <div class="side__user-role">관리자</div>
+      </div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <div class="crumb"><a href="/admin">관리자</a><span>›</span><a href="/admin/vehicles">차량</a><span>›</span><span class="now">등록</span></div>
+      <div class="topbar-actions">
+        <button class="btn-secondary">미리보기</button>
+        <button class="btn-primary">저장하기</button>
+      </div>
+    </div>
+
+    <header class="page-head">
+      <h1 class="page-title">차량 등록</h1>
+      <p class="page-desc">새로운 차량을 컬렉션 또는 업커밍에 등록합니다.</p>
+    </header>
+
+    <form class="form">
+
+      <!-- 01. 기본 정보 -->
+      <section class="fieldset">
+        <header class="fieldset__head">
+          <span class="fieldset__num">1</span>
+          <h2 class="fieldset__title">기본 정보</h2>
+          <span class="fieldset__desc">차량의 핵심 사양</span>
+        </header>
+        <div class="grid-3">
+          <div class="f-field"><label class="f-label">브랜드 <span class="req">*</span></label>
+            <select class="f-select"><option>선택</option><option>BMW</option><option>Mercedes-Benz</option><option>Audi</option><option>Porsche</option><option>Bentley</option><option>Land Rover</option><option>Genesis</option><option>Tesla</option></select>
+          </div>
+          <div class="f-field"><label class="f-label">모델명 <span class="req">*</span></label><input class="f-input" placeholder="CLE200 Cabriolet" /></div>
+          <div class="f-field"><label class="f-label">트림</label><input class="f-input" placeholder="AMG Line" /></div>
+        </div>
+        <div class="grid-3" style="margin-top: 16px;">
+          <div class="f-field"><label class="f-label">연식 <span class="req">*</span></label><input class="f-input" type="number" placeholder="2025" /></div>
+          <div class="f-field"><label class="f-label">색상</label><input class="f-input" placeholder="검정" /></div>
+          <div class="f-field"><label class="f-label">주행거리 (km)</label><input class="f-input" type="number" placeholder="8200" /></div>
+        </div>
+        <div class="grid-3" style="margin-top: 16px;">
+          <div class="f-field"><label class="f-label">연료</label>
+            <select class="f-select"><option>가솔린</option><option>디젤</option><option>하이브리드</option><option>전기</option><option>LPG</option></select>
+          </div>
+          <div class="f-field"><label class="f-label">변속</label>
+            <select class="f-select"><option>자동</option><option>수동</option></select>
+          </div>
+          <div class="f-field"><label class="f-label">신차가 (만원)</label><input class="f-input" type="number" placeholder="6626" /></div>
+        </div>
+      </section>
+
+      <!-- 02. 가격 및 노출 -->
+      <section class="fieldset">
+        <header class="fieldset__head">
+          <span class="fieldset__num">2</span>
+          <h2 class="fieldset__title">가격 · 노출 설정</h2>
+          <span class="fieldset__desc">공개 여부와 노출 위치</span>
+        </header>
+
+        <div class="grid-2">
+          <div class="f-field"><label class="f-label">월 구독료 최저가 (만원)</label><input class="f-input" type="number" placeholder="239" /></div>
+          <div class="f-field"><label class="f-label">월 구독료 최고가 (만원)</label><input class="f-input" type="number" placeholder="265" /><span class="f-hint">최저가만 표기하려면 비워두세요</span></div>
+        </div>
+
+        <div class="f-field" style="margin-top: 20px;">
+          <label class="f-label">상품 유형</label>
+          <div class="pill-group">
+            <button type="button" class="pill is-active"><span class="dot"></span>구독</button>
+            <button type="button" class="pill"><span class="dot" style="background:#C9521A"></span>렌트</button>
+            <button type="button" class="pill"><span class="dot" style="background:#6E59E0"></span>슈퍼카</button>
+          </div>
+        </div>
+
+        <div class="f-field" style="margin-top: 20px;">
+          <label class="f-label">공개 상태</label>
+          <div class="pill-group">
+            <button type="button" class="pill is-active"><span class="dot"></span>공개</button>
+            <button type="button" class="pill hidden"><span class="dot"></span>숨김</button>
+            <button type="button" class="pill sold"><span class="dot"></span>Sold Out</button>
+          </div>
+        </div>
+
+        <div class="f-field" style="margin-top: 20px;">
+          <label class="f-label">표시 위치</label>
+          <div class="pill-group">
+            <button type="button" class="pill is-active"><span class="dot"></span>메인 컬렉션</button>
+            <button type="button" class="pill up"><span class="dot"></span>업커밍 · 1달 내</button>
+            <button type="button" class="pill up"><span class="dot"></span>업커밍 · 그 밖에</button>
+            <button type="button" class="pill hidden"><span class="dot"></span>미배치</button>
+          </div>
+        </div>
+
+        <div style="margin-top: 16px;">
+          <div class="toggle-row">
+            <div>
+              <div class="toggle-row__label">빠른 출고 배지</div>
+              <div class="toggle-row__desc">메인 카드에 "빠른 출고" 배지 표시</div>
+            </div>
+            <div class="toggle is-on" data-toggle></div>
+          </div>
+          <div class="toggle-row">
+            <div>
+              <div class="toggle-row__label">특가 차량</div>
+              <div class="toggle-row__desc">"특가" 배지 + 특가 차량 영역에 우선 노출</div>
+            </div>
+            <div class="toggle" data-toggle></div>
+          </div>
+          <div class="toggle-row">
+            <div>
+              <div class="toggle-row__label">에디터스 픽</div>
+              <div class="toggle-row__desc">메인에서 우선 정렬</div>
+            </div>
+            <div class="toggle is-on" data-toggle></div>
+          </div>
+        </div>
+
+        <div class="grid-2" style="margin-top: 20px;">
+          <div class="f-field"><label class="f-label">예상 출고 라벨 <span class="f-hint" style="display:inline; margin-left:6px;">(업커밍 노출 시)</span></label><input class="f-input" placeholder="12월 첫째 주 출고" /></div>
+        </div>
+      </section>
+
+      <!-- 03. 차량 이미지 -->
+      <section class="fieldset">
+        <header class="fieldset__head">
+          <span class="fieldset__num">3</span>
+          <h2 class="fieldset__title">차량 이미지</h2>
+          <span class="fieldset__desc">드래그하여 순서 변경, 클릭으로 대표 지정</span>
+        </header>
+
+        <div class="dropzone">
+          <div class="dropzone__icon"><svg viewBox="0 0 24 24"><path d="M12 4v12 M6 10l6-6 6 6 M4 16v3a1 1 0 001 1h14a1 1 0 001-1v-3"/></svg></div>
+          <div class="dropzone__title">이미지를 끌어다 놓거나 클릭하여 업로드</div>
+          <div class="dropzone__sub">JPG, PNG, WEBP · 최대 20장 · 권장 비율 <strong>4:3</strong> · 장당 10MB 이하</div>
+        </div>
+
+        <div class="thumbs">
+          <div class="thumb">
+            <img src="https://images.unsplash.com/photo-1542362567-b07e54358753?w=400" alt="" />
+            <span class="thumb__order">1</span>
+            <span class="thumb__primary">대표</span>
+            <button type="button" class="thumb__remove">×</button>
+          </div>
+          <div class="thumb">
+            <img src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=400" alt="" />
+            <span class="thumb__order">2</span>
+            <button type="button" class="thumb__remove">×</button>
+          </div>
+          <div class="thumb">
+            <img src="https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=400" alt="" />
+            <span class="thumb__order">3</span>
+            <button type="button" class="thumb__remove">×</button>
+          </div>
+          <div class="thumb">
+            <img src="https://images.unsplash.com/photo-1555215695-3004980ad54e?w=400" alt="" />
+            <span class="thumb__order">4</span>
+            <button type="button" class="thumb__remove">×</button>
+          </div>
+          <div class="thumb">
+            <img src="https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?w=400" alt="" />
+            <span class="thumb__order">5</span>
+            <button type="button" class="thumb__remove">×</button>
+          </div>
+          <div class="thumb">
+            <img src="https://images.unsplash.com/photo-1617814076367-b759c7d7e738?w=400" alt="" />
+            <span class="thumb__order">6</span>
+            <button type="button" class="thumb__remove">×</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- 04. 설명 -->
+      <section class="fieldset">
+        <header class="fieldset__head">
+          <span class="fieldset__num">4</span>
+          <h2 class="fieldset__title">설명</h2>
+          <span class="fieldset__desc">차량 소개 문구</span>
+        </header>
+        <div class="f-field" style="margin-bottom: 16px;"><label class="f-label">한 줄 헤드라인</label><input class="f-input" placeholder="2025년식 풀옵션, 검정 외장에 베이지 가죽 인테리어" /></div>
+        <div class="f-field"><label class="f-label">상세 설명</label><textarea class="f-textarea" placeholder="차량의 상태, 옵션, 관리 이력 등을 자유롭게 작성하세요."></textarea><span class="f-hint">줄바꿈 그대로 반영. 마크다운 미지원</span></div>
+      </section>
+
+      <!-- 05. 편의 옵션 -->
+      <section class="fieldset">
+        <header class="fieldset__head">
+          <span class="fieldset__num">5</span>
+          <h2 class="fieldset__title">편의 옵션</h2>
+          <span class="fieldset__desc">해당 옵션 모두 선택</span>
+        </header>
+        <div class="opts">
+          <label class="opt"><input type="checkbox" checked /><span class="box"></span><span>통풍시트</span></label>
+          <label class="opt"><input type="checkbox" checked /><span class="box"></span><span>열선시트</span></label>
+          <label class="opt"><input type="checkbox" checked /><span class="box"></span><span>HUD</span></label>
+          <label class="opt"><input type="checkbox" /><span class="box"></span><span>어라운드뷰</span></label>
+          <label class="opt"><input type="checkbox" checked /><span class="box"></span><span>전동 트렁크</span></label>
+          <label class="opt"><input type="checkbox" /><span class="box"></span><span>마사지 시트</span></label>
+          <label class="opt"><input type="checkbox" checked /><span class="box"></span><span>크루즈 컨트롤</span></label>
+          <label class="opt"><input type="checkbox" /><span class="box"></span><span>차선 유지 보조</span></label>
+          <label class="opt"><input type="checkbox" checked /><span class="box"></span><span>파노라마 선루프</span></label>
+          <label class="opt"><input type="checkbox" /><span class="box"></span><span>하만카돈</span></label>
+          <label class="opt"><input type="checkbox" /><span class="box"></span><span>뱅앤올룹슨</span></label>
+          <label class="opt"><input type="checkbox" checked /><span class="box"></span><span>나파 가죽시트</span></label>
+        </div>
+      </section>
+
+      <div class="form-actions">
+        <span class="form-actions__info">변경사항은 저장 후 반영됩니다</span>
+        <div class="form-actions__buttons">
+          <button type="button" class="btn-secondary">임시 저장</button>
+          <button type="submit" class="btn-primary">저장하기</button>
+        </div>
+      </div>
+    </form>
+
+  </main>
+</div>
+
+<script>
+document.querySelectorAll('[data-toggle]').forEach(t => t.addEventListener('click', () => t.classList.toggle('is-on')));
+document.querySelectorAll('.pill-group').forEach(g => g.querySelectorAll('.pill').forEach(p => p.addEventListener('click', () => {
+  g.querySelectorAll('.pill').forEach(x => x.classList.remove('is-active'));
+  p.classList.add('is-active');
+})));
+</script>
+
+</body>
+</html>

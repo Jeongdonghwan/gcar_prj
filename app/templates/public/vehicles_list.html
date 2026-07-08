@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+{% from 'public/_vehicle_card.html' import vehicle_card %}
+{% block title %}차량 전체 — Great Car{% endblock %}
+
+{% block content %}
+<div class="container">
+
+  <section style="margin:24px 0 16px;">
+    <h1 style="font-size:26px;">차량 전체</h1>
+    <p style="color:var(--ink-2);margin-top:6px;">
+      {% if active_brand %}
+        {% set bn = (brands | selectattr('slug', 'equalto', active_brand) | first) %}
+        {{ bn.name if bn else active_brand }} · 총 {{ pagination.total }}대
+      {% else %}
+        총 {{ pagination.total }}대
+      {% endif %}
+    </p>
+  </section>
+
+  {% if brands %}
+  <div class="brand-strip" role="tablist" aria-label="브랜드 필터">
+    <a href="{{ url_for('public.vehicles_list', sort=active_sort) }}"
+       class="brand-pill only-text {% if not active_brand %}is-active{% endif %}">전체</a>
+    {% for b in brands %}
+      <a href="{{ url_for('public.vehicles_list', brand=b.slug, sort=active_sort) }}"
+         class="brand-pill {% if active_brand == b.slug %}is-active{% endif %}"
+         title="{{ b.name }}">
+        {% if b.logo_path %}<img src="{{ b.logo_path }}" alt="" />{% endif %}
+        <span>{{ b.name }}</span>
+      </a>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <div style="display:flex;justify-content:flex-end;margin-bottom:12px;">
+    <select id="sort-select" onchange="window.location.href=this.value" style="padding:8px 14px;border-radius:999px;border:1px solid var(--line);background:#fff;font-size:13px;">
+      {% set qs_base = {'brand': active_brand} if active_brand else {} %}
+      <option value="{{ url_for('public.vehicles_list', sort='recommended', **qs_base) }}" {% if active_sort == 'recommended' %}selected{% endif %}>추천순</option>
+      <option value="{{ url_for('public.vehicles_list', sort='newest', **qs_base) }}" {% if active_sort == 'newest' %}selected{% endif %}>최신순</option>
+      <option value="{{ url_for('public.vehicles_list', sort='price_asc', **qs_base) }}" {% if active_sort == 'price_asc' %}selected{% endif %}>가격 낮은순</option>
+      <option value="{{ url_for('public.vehicles_list', sort='price_desc', **qs_base) }}" {% if active_sort == 'price_desc' %}selected{% endif %}>가격 높은순</option>
+    </select>
+  </div>
+
+  {% if pagination.items %}
+  <div class="catalog-grid">
+    {% for v in pagination.items %}
+      {{ vehicle_card(v) }}
+    {% endfor %}
+  </div>
+
+  {% if pagination.pages > 1 %}
+  <nav class="catalog-pager" aria-label="페이지">
+    {% if pagination.has_prev %}
+      <a class="pager-btn" href="{{ url_for('public.vehicles_list', sort=active_sort, brand=active_brand, page=pagination.prev_num) }}">← 이전</a>
+    {% else %}
+      <span class="pager-btn is-disabled">← 이전</span>
+    {% endif %}
+    {% for p in pagination.iter_pages(left_edge=1, left_current=2, right_current=2, right_edge=1) %}
+      {% if p %}
+        <a class="pager-num {% if p == pagination.page %}is-active{% endif %}"
+           href="{{ url_for('public.vehicles_list', sort=active_sort, brand=active_brand, page=p) }}">{{ p }}</a>
+      {% else %}
+        <span class="pager-gap">…</span>
+      {% endif %}
+    {% endfor %}
+    {% if pagination.has_next %}
+      <a class="pager-btn" href="{{ url_for('public.vehicles_list', sort=active_sort, brand=active_brand, page=pagination.next_num) }}">다음 →</a>
+    {% else %}
+      <span class="pager-btn is-disabled">다음 →</span>
+    {% endif %}
+  </nav>
+  {% endif %}
+
+  {% else %}
+    <div class="empty-state">조건에 맞는 차량이 없습니다.</div>
+  {% endif %}
+
+</div>
+{% endblock %}

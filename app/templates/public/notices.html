@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block title %}공지사항 — Great Car{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top:24px;">
+  <h1 style="font-size:26px;margin-bottom:16px;">공지사항</h1>
+  <div class="notice-card">
+    <div class="notice-list">
+      {% for n in notices %}
+      <a class="notice-row" href="{{ url_for('public.notice_detail', notice_id=n.id) }}">
+        {% if n.is_pinned %}<span class="pin">필독</span>{% endif %}
+        <span>{{ n.title }}</span>
+        <span class="date">{{ n.created_at | date_kr }}</span>
+      </a>
+      {% else %}
+      <div style="color:var(--muted);">등록된 공지가 없습니다.</div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% block title %}페이지를 찾을 수 없습니다 — Great Car{% endblock %}
+{% block content %}
+<div class="container" style="padding:80px 0;text-align:center;">
+  <div style="font-size:48px;font-weight:800;color:var(--muted);">404</div>
+  <h1 style="margin-top:8px;font-size:22px;">요청하신 페이지를 찾을 수 없습니다.</h1>
+  <a class="btn btn-primary" href="{{ url_for('public.index') }}" style="margin-top:20px;">홈으로</a>
+</div>
+{% endblock %}

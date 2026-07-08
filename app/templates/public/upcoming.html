@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+{% from 'public/_vehicle_card.html' import vehicle_card %}
+{% block title %}업커밍 — Great Car{% endblock %}
+
+{% block content %}
+<div class="container">
+
+  <section class="upcoming-hero">
+    <div class="label">UPCOMING</div>
+    <h1>새 차량을 가장 먼저</h1>
+    <p style="opacity:0.9;max-width:520px;">에디터가 큐레이션한 다음 차례의 차량들. 카카오 1:1로 출고 알림을 받아보세요.</p>
+    <div class="upcoming-stats">
+      <div class="cell"><div class="num">{{ group_a|length }}</div><div class="lbl">1달 내 구독 가능</div></div>
+      <div class="cell"><div class="num">{{ group_b|length }}</div><div class="lbl">그 밖에 준비 중</div></div>
+      <div class="cell"><div class="num">다음 호</div><div class="lbl">매월 1일 공개</div></div>
+    </div>
+  </section>
+
+  <section aria-label="1달 내 구독 가능한 자동차" class="is-single-row" data-vehicle-slider tabindex="0" style="margin-top:24px;">
+    <div class="section-head">
+      <h2 class="section-title">1달 내 구독 가능한 자동차</h2>
+      <div class="section-actions">
+        <div class="slider-arrows">
+          <button class="slider-arrow" data-slider-prev aria-label="이전">‹</button>
+          <span class="slider-counter" data-slider-counter>1/1</span>
+          <button class="slider-arrow" data-slider-next aria-label="다음">›</button>
+        </div>
+      </div>
+    </div>
+    {% if group_a %}
+    <div class="vehicle-slider-wrap">
+      <div class="vehicle-slider-track">
+        {% for v in group_a %}
+          {{ vehicle_card(v) }}
+        {% endfor %}
+      </div>
+    </div>
+    <div class="slider-pager" data-slider-pager></div>
+    {% else %}
+    <div class="empty-state">현재 1달 내 구독 예정 차량이 없습니다.</div>
+    {% endif %}
+  </section>
+
+  <div class="upcoming-divider">— 아직 컬렉션에 없는 차량 —</div>
+
+  <section aria-label="그 밖에 구독 가능한 자동차" class="is-single-row" data-vehicle-slider tabindex="0">
+    <div class="section-head">
+      <h2 class="section-title">그 밖에 구독 가능한 자동차</h2>
+      <div class="section-actions">
+        <div class="slider-arrows">
+          <button class="slider-arrow" data-slider-prev aria-label="이전">‹</button>
+          <span class="slider-counter" data-slider-counter>1/1</span>
+          <button class="slider-arrow" data-slider-next aria-label="다음">›</button>
+        </div>
+      </div>
+    </div>
+    {% if group_b %}
+    <div class="vehicle-slider-wrap">
+      <div class="vehicle-slider-track">
+        {% for v in group_b %}
+          {{ vehicle_card(v) }}
+        {% endfor %}
+      </div>
+    </div>
+    <div class="slider-pager" data-slider-pager></div>
+    {% else %}
+    <div class="empty-state">현재 준비 중인 차량이 없습니다.</div>
+    {% endif %}
+  </section>
+
+  {% if kakao_channel_url %}
+  <section class="upcoming-cta-banner">
+    <h3>출고 알림 받아보기</h3>
+    <p style="color:rgba(255,255,255,0.8);margin-bottom:16px;">관심 차량을 카카오 1:1 채널로 알려주시면 가장 먼저 안내해드립니다.</p>
+    <a class="btn btn-kakao" href="{{ kakao_channel_url }}" target="_blank"
+       data-kakao-cta data-kakao-url="{{ kakao_channel_url }}" data-source="upcoming">
+      카카오톡 1:1 문의
+    </a>
+  </section>
+  {% endif %}
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/slider.js') }}"></script>
+{% endblock %}

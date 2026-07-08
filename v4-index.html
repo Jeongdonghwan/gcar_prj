@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+<title>차량 구독 서비스</title>
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet">
+<style>
+:root {
+  --bg: #FFFFFF;
+  --surface: #F4F6F9;
+  --surface-2: #EDF0F5;
+  --ink: #111111;
+  --ink-2: #4B5563;
+  --muted: #8B92A0;
+  --line: #E5E7EB;
+  --line-2: #EEF1F5;
+  --primary: #3B6EF5;
+  --primary-soft: #E8F0FF;
+  --primary-deep: #2952CC;
+  --warn: #FF6A3D;
+  --kakao: #FEE500;
+  --kakao-ink: #3A1D1D;
+  --radius-card: 20px;
+  --radius-sm: 12px;
+  --radius-pill: 999px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  font-feature-settings: "ss01", "tnum";
+}
+a { color: inherit; text-decoration: none; }
+button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; padding: 0; }
+img { display: block; max-width: 100%; }
+
+/* HEADER */
+.header { position: sticky; top: 0; z-index: 50; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); border-bottom: 1px solid transparent; transition: border-color 180ms; }
+.header.is-scrolled { border-bottom-color: var(--line); }
+.header__inner { max-width: 1280px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; padding: 14px 20px; height: 60px; }
+@media (min-width: 1024px) { .header__inner { padding: 16px 32px; height: 72px; } }
+
+.logo { font-size: 22px; font-weight: 800; letter-spacing: -0.04em; color: var(--primary); }
+.logo em { font-style: normal; color: var(--ink); }
+@media (min-width: 1024px) { .logo { font-size: 26px; } }
+
+.nav-pc { display: none; gap: 32px; font-size: 15px; font-weight: 500; }
+@media (min-width: 1024px) { .nav-pc { display: flex; } }
+.nav-pc a { color: var(--ink-2); transition: color 160ms; }
+.nav-pc a:hover { color: var(--ink); }
+.nav-pc a.is-active { color: var(--ink); font-weight: 600; }
+
+.header__right { display: flex; align-items: center; gap: 14px; }
+.header__lang { display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; border: 1px solid var(--line); border-radius: var(--radius-pill); font-size: 13px; font-weight: 500; color: var(--ink-2); }
+.header__lang svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 1.6; }
+.header__my { font-size: 14px; font-weight: 600; padding: 7px 4px; color: var(--ink); }
+
+/* CONTAINER */
+.container { max-width: 1280px; margin: 0 auto; padding: 16px 16px 120px; }
+@media (min-width: 768px) { .container { padding: 20px 24px 120px; } }
+@media (min-width: 1024px) { .container { padding: 32px 32px 160px; } }
+
+/* HERO */
+.hero { background: var(--surface); border-radius: var(--radius-card); padding: 28px 24px 24px; position: relative; overflow: hidden; min-height: 220px; display: flex; align-items: stretch; }
+@media (min-width: 768px) { .hero { padding: 44px 40px 40px; min-height: 280px; border-radius: 24px; } }
+@media (min-width: 1024px) { .hero { padding: 56px 56px 52px; min-height: 360px; } }
+
+.hero__slides { position: relative; width: 100%; }
+.hero__slide { position: absolute; inset: 0; display: flex; align-items: center; justify-content: space-between; gap: 16px; opacity: 0; transition: opacity 700ms ease; }
+.hero__slide.is-active { opacity: 1; position: relative; }
+
+.hero__copy { flex: 1; min-width: 0; }
+.hero__head { font-size: 24px; font-weight: 800; letter-spacing: -0.025em; line-height: 1.25; color: var(--ink); margin-bottom: 8px; }
+@media (min-width: 768px) { .hero__head { font-size: 34px; line-height: 1.2; } }
+@media (min-width: 1024px) { .hero__head { font-size: 44px; line-height: 1.15; } }
+.hero__head em { font-style: normal; color: var(--primary); }
+.hero__sub { font-size: 13px; color: var(--ink-2); line-height: 1.5; }
+@media (min-width: 768px) { .hero__sub { font-size: 15px; } }
+@media (min-width: 1024px) { .hero__sub { font-size: 17px; } }
+
+.hero__img { flex-shrink: 0; width: 110px; height: 110px; display: flex; align-items: center; justify-content: center; background: var(--bg); border-radius: 50%; }
+.hero__img img { width: 70%; height: 70%; object-fit: contain; }
+@media (min-width: 768px) { .hero__img { width: 180px; height: 180px; } }
+@media (min-width: 1024px) { .hero__img { width: 260px; height: 260px; } }
+
+.hero__counter { position: absolute; bottom: 16px; right: 16px; background: rgba(17,17,17,0.55); color: white; padding: 4px 10px; border-radius: var(--radius-pill); font-size: 11px; font-weight: 500; }
+@media (min-width: 1024px) { .hero__counter { bottom: 24px; right: 24px; padding: 6px 14px; font-size: 12px; } }
+
+/* QUICK */
+.quick-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }
+@media (min-width: 768px) { .quick-row { gap: 12px; margin-top: 12px; } }
+@media (min-width: 1024px) { .quick-row { grid-template-columns: repeat(4, 1fr); gap: 14px; margin-top: 14px; } }
+.quick { background: var(--surface); border-radius: 16px; padding: 16px; display: flex; align-items: center; justify-content: space-between; gap: 10px; cursor: pointer; transition: background 160ms; min-height: 80px; }
+.quick:hover { background: var(--surface-2); }
+@media (min-width: 1024px) { .quick { padding: 22px; min-height: 110px; } }
+.quick__text { flex: 1; min-width: 0; }
+.quick__title { font-size: 14px; font-weight: 700; color: var(--ink); margin-bottom: 3px; letter-spacing: -0.01em; }
+@media (min-width: 1024px) { .quick__title { font-size: 17px; } }
+.quick__sub { font-size: 11px; color: var(--ink-2); line-height: 1.35; }
+@media (min-width: 1024px) { .quick__sub { font-size: 13px; } }
+.quick__icon { width: 40px; height: 40px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+@media (min-width: 1024px) { .quick__icon { width: 56px; height: 56px; } }
+.quick__icon img { width: 100%; height: 100%; object-fit: contain; }
+
+/* SECTION */
+.section { margin-top: 36px; }
+@media (min-width: 1024px) { .section { margin-top: 56px; } }
+
+.section__head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; padding: 0 4px; gap: 12px; flex-wrap: wrap; }
+@media (min-width: 1024px) { .section__head { margin-bottom: 22px; padding: 0; flex-wrap: nowrap; } }
+
+.section__title { font-size: 20px; font-weight: 800; letter-spacing: -0.025em; color: var(--ink); }
+@media (min-width: 1024px) { .section__title { font-size: 26px; } }
+
+.section__head-right { display: flex; align-items: center; gap: 16px; }
+
+.sort { display: inline-flex; align-items: center; gap: 4px; font-size: 13px; font-weight: 500; color: var(--ink-2); padding: 6px 8px; border-radius: 8px; }
+.sort:hover { background: var(--surface); }
+.sort svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2; }
+
+/* SLIDER CONTROLS (PC only) */
+.slider-controls { display: none; align-items: center; gap: 10px; }
+@media (min-width: 1024px) { .slider-controls { display: inline-flex; } }
+.slider-controls__page { font-size: 13px; font-weight: 600; color: var(--ink); min-width: 42px; text-align: center; font-variant-numeric: tabular-nums; letter-spacing: 0.02em; }
+.slider-controls__page em { font-style: normal; color: var(--muted); font-weight: 500; }
+.slider-arrow { width: 40px; height: 40px; border-radius: 50%; background: white; border: 1.5px solid var(--line); display: inline-flex; align-items: center; justify-content: center; color: var(--ink); transition: border-color 160ms, background 160ms, color 160ms; }
+.slider-arrow:hover:not(:disabled) { border-color: var(--ink); background: var(--ink); color: white; }
+.slider-arrow:disabled { opacity: 0.35; cursor: not-allowed; color: var(--muted); }
+.slider-arrow svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2; }
+
+/* TYPE TABS */
+.type-tabs { display: flex; gap: 22px; padding: 0 4px; border-bottom: 1px solid var(--line-2); margin-bottom: 20px; overflow-x: auto; scrollbar-width: none; }
+.type-tabs::-webkit-scrollbar { display: none; }
+@media (min-width: 1024px) { .type-tabs { gap: 32px; padding: 0; margin-bottom: 24px; } }
+.type-tab { padding: 12px 2px; font-size: 15px; font-weight: 500; color: var(--muted); position: relative; white-space: nowrap; transition: color 160ms; }
+.type-tab:hover { color: var(--ink-2); }
+.type-tab.is-active { color: var(--ink); font-weight: 700; }
+.type-tab.is-active::after { content: ''; position: absolute; left: 0; right: 0; bottom: -1px; height: 2px; background: var(--ink); border-radius: 2px; }
+@media (min-width: 1024px) { .type-tab { font-size: 16px; padding: 14px 2px; } }
+
+/* BRAND */
+.brand-strip { display: flex; gap: 14px; padding: 4px 4px 8px; overflow-x: auto; scrollbar-width: none; margin-bottom: 12px; margin-left: -4px; margin-right: -4px; }
+.brand-strip::-webkit-scrollbar { display: none; }
+@media (min-width: 1024px) { .brand-strip { gap: 14px; overflow-x: visible; margin-bottom: 32px; flex-wrap: wrap; justify-content: flex-start; } }
+.brand-item { flex-shrink: 0; display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; width: 64px; }
+@media (min-width: 1024px) { .brand-item { width: 80px; gap: 10px; } }
+.brand-item__circle { width: 56px; height: 56px; border-radius: 50%; background: var(--bg); border: 1.5px solid var(--line); display: flex; align-items: center; justify-content: center; transition: border-color 180ms; }
+@media (min-width: 1024px) { .brand-item__circle { width: 64px; height: 64px; } }
+.brand-item:hover .brand-item__circle { border-color: var(--ink-2); }
+.brand-item.is-active .brand-item__circle { border-color: var(--primary); border-width: 2px; }
+.brand-item__icon { width: 24px; height: 24px; color: var(--ink); display: flex; align-items: center; justify-content: center; }
+.brand-item.is-active .brand-item__icon { color: var(--primary); }
+.brand-item__icon svg { width: 100%; height: 100%; }
+.brand-item__label { font-size: 12px; font-weight: 500; color: var(--ink-2); text-align: center; }
+.brand-item.is-active .brand-item__label { color: var(--ink); font-weight: 600; }
+@media (min-width: 1024px) { .brand-item__label { font-size: 13px; } }
+
+/* ============================================================
+   VEHICLES SLIDER
+   - Mobile (<768): 1 col stacked
+   - Tablet (768-1023): 2 col stacked
+   - PC (>=1024): horizontal slider, 2 rows × 2 cols visible (4 per page)
+   ============================================================ */
+.vehicles-slider { position: relative; }
+.vehicles-track { display: grid; grid-template-columns: 1fr; gap: 12px; }
+@media (min-width: 768px) { .vehicles-track { grid-template-columns: 1fr 1fr; gap: 16px; } }
+
+@media (min-width: 1024px) {
+  .vehicles-slider { overflow: hidden; }
+  .vehicles-track {
+    grid-template-columns: none;
+    grid-template-rows: 1fr 1fr;
+    grid-auto-flow: column;
+    grid-auto-columns: calc((100% - 20px) / 2);  /* 2 cols visible per page */
+    gap: 20px;
+    transition: transform 520ms cubic-bezier(0.22, 0.61, 0.36, 1);
+    will-change: transform;
+  }
+}
+
+/* VCARD */
+.vcard { background: var(--surface); border-radius: var(--radius-card); padding: 22px 22px 0; display: flex; flex-direction: column; cursor: pointer; transition: background 180ms, transform 180ms; overflow: hidden; min-height: 280px; }
+.vcard:hover { background: var(--surface-2); }
+.vcard:active { transform: scale(0.995); }
+@media (min-width: 1024px) { .vcard { padding: 28px 28px 0; min-height: 340px; } }
+
+.vcard__top { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; margin-bottom: 6px; }
+.vcard__title-wrap { flex: 1; min-width: 0; }
+.vcard__name { font-size: 17px; font-weight: 700; letter-spacing: -0.015em; color: var(--ink); display: inline-flex; align-items: center; flex-wrap: wrap; gap: 6px; margin-bottom: 0; }
+@media (min-width: 1024px) { .vcard__name { font-size: 20px; } }
+
+.vbadge { display: inline-flex; align-items: center; font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 6px; letter-spacing: -0.01em; vertical-align: middle; }
+@media (min-width: 1024px) { .vbadge { font-size: 12px; padding: 3px 10px; } }
+.vbadge.is-sub { background: #E8EAEF; color: #4B5563; }
+.vbadge.is-fast { background: var(--primary-soft); color: var(--primary); }
+.vbadge.is-rent { background: #FFF1E6; color: #C9521A; }
+.vbadge.is-deal { background: #FFE9E0; color: var(--warn); }
+.vbadge.is-new { background: #1A1A1A; color: white; }
+
+.vcard__arrow { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--muted); flex-shrink: 0; margin-top: 2px; transition: background 160ms, color 160ms; }
+.vcard:hover .vcard__arrow { background: white; color: var(--ink); }
+.vcard__arrow svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2; }
+
+.vcard__price { font-size: 22px; font-weight: 800; letter-spacing: -0.025em; color: var(--ink); display: inline-flex; align-items: baseline; gap: 6px; line-height: 1.2; margin-bottom: 6px; }
+@media (min-width: 1024px) { .vcard__price { font-size: 27px; } }
+.vcard__price-from { font-size: 13px; font-weight: 500; color: var(--muted); }
+@media (min-width: 1024px) { .vcard__price-from { font-size: 14px; } }
+
+.vcard__meta { font-size: 12px; color: var(--muted); font-weight: 500; display: inline-flex; gap: 10px; letter-spacing: -0.005em; }
+@media (min-width: 1024px) { .vcard__meta { font-size: 13px; } }
+.vcard__meta span:not(:last-child)::after { content: '|'; margin-left: 10px; color: var(--line); }
+
+.vcard__image { margin: 18px -8px -8px; flex: 1; display: flex; align-items: flex-end; justify-content: center; min-height: 140px; padding-bottom: 8px; }
+@media (min-width: 1024px) { .vcard__image { min-height: 170px; margin: 18px -12px -12px; } }
+.vcard__image img { max-width: 100%; max-height: 200px; object-fit: contain; filter: drop-shadow(0 18px 24px rgba(0,0,0,0.12)); transition: transform 400ms ease; }
+@media (min-width: 1024px) { .vcard__image img { max-height: 220px; } }
+.vcard:hover .vcard__image img { transform: scale(1.04) translateY(-2px); }
+
+.vcard.is-sold .vcard__image img { filter: grayscale(0.9) brightness(0.95) drop-shadow(0 12px 18px rgba(0,0,0,0.08)); }
+.vcard.is-sold .vcard__price { color: var(--muted); text-decoration: line-through; text-decoration-thickness: 1.5px; }
+
+/* MORE BTN (hide on PC since slider handles it) */
+.more-btn-wrap { margin-top: 24px; text-align: center; }
+@media (min-width: 1024px) { .more-btn-wrap { display: none; } }
+.more-btn { display: inline-flex; align-items: center; gap: 6px; padding: 14px 28px; background: white; border: 1.5px solid var(--line); border-radius: var(--radius-pill); font-size: 14px; font-weight: 600; color: var(--ink); transition: border-color 160ms; }
+.more-btn:hover { border-color: var(--ink); }
+.more-btn svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2; }
+
+/* PC: show "전체 보기" link below slider */
+.slider-foot { display: none; }
+@media (min-width: 1024px) {
+  .slider-foot { display: flex; justify-content: center; margin-top: 28px; }
+  .slider-foot a { font-size: 14px; font-weight: 500; color: var(--ink-2); display: inline-flex; align-items: center; gap: 6px; padding: 8px 4px; transition: color 160ms; }
+  .slider-foot a:hover { color: var(--ink); }
+  .slider-foot a::after { content: '→'; transition: transform 160ms; }
+  .slider-foot a:hover::after { transform: translateX(4px); }
+}
+
+/* FOOTER */
+.footer { margin-top: 80px; padding: 32px 16px 28px; background: var(--surface); font-size: 12px; color: var(--ink-2); line-height: 1.7; }
+.footer__inner { max-width: 1280px; margin: 0 auto; }
+.footer__row { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 16px; font-weight: 500; }
+.footer__row a { color: var(--ink); }
+.footer__biz { font-size: 11px; color: var(--muted); }
+
+/* KAKAO FAB */
+.kakao-fab { position: fixed; z-index: 80; bottom: 16px; right: 16px; display: inline-flex; align-items: center; gap: 8px; background: var(--kakao); color: var(--kakao-ink); padding: 12px 18px; border-radius: var(--radius-pill); font-size: 14px; font-weight: 700; box-shadow: 0 6px 18px rgba(0,0,0,0.12), 0 2px 4px rgba(0,0,0,0.06); letter-spacing: -0.01em; transition: transform 160ms; }
+.kakao-fab:hover { transform: translateY(-1px); }
+.kakao-fab:active { transform: scale(0.97); }
+.kakao-fab svg { width: 18px; height: 18px; }
+@media (min-width: 1024px) { .kakao-fab { bottom: 32px; right: 32px; padding: 14px 22px; font-size: 15px; } .kakao-fab svg { width: 20px; height: 20px; } }
+</style>
+</head>
+<body>
+
+<header class="header" id="header">
+  <div class="header__inner">
+    <a href="/" class="logo">GA<em>:RAGE</em></a>
+    <nav class="nav-pc">
+      <a href="/" class="is-active">홈</a>
+      <a href="/?type=sub">구독</a>
+      <a href="/?type=rent">렌트</a>
+      <a href="/?type=super">슈퍼카</a>
+      <a href="/upcoming">업커밍</a>
+      <a href="/faq">고객센터</a>
+    </nav>
+    <div class="header__right">
+      <button class="header__lang">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18 M12 3a14 14 0 010 18 M12 3a14 14 0 000 18"/></svg>
+        ENG
+      </button>
+      <a href="/mypage" class="header__my">MY</a>
+    </div>
+  </div>
+</header>
+
+<main class="container">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero__slides">
+      <div class="hero__slide is-active">
+        <div class="hero__copy">
+          <h1 class="hero__head">수리비 <em>0원</em><br/>보증수리 무제한</h1>
+          <p class="hero__sub">걱정 없이 내 차처럼 타세요.</p>
+        </div>
+        <div class="hero__img">
+          <svg viewBox="0 0 80 80" fill="none"><circle cx="40" cy="40" r="36" fill="#E8F0FF"/><path d="M22 50h36v-8l-6-10H28l-6 10v8z" fill="#3B6EF5"/><circle cx="30" cy="52" r="4" fill="#1A1A1A"/><circle cx="50" cy="52" r="4" fill="#1A1A1A"/><path d="M30 36h20" stroke="#1A1A1A" stroke-width="2"/></svg>
+        </div>
+      </div>
+      <div class="hero__slide">
+        <div class="hero__copy">
+          <h1 class="hero__head">첫 달 구독료<br/><em>30% 할인</em></h1>
+          <p class="hero__sub">BMW, 벤츠, 아우디 등 인기 수입차 구독시.</p>
+        </div>
+        <div class="hero__img">
+          <svg viewBox="0 0 80 80" fill="none"><circle cx="40" cy="40" r="36" fill="#FFF1E6"/><rect x="22" y="28" width="36" height="24" rx="4" fill="#FF6A3D"/><text x="40" y="44" text-anchor="middle" font-family="Pretendard" font-weight="800" font-size="11" fill="white">30%</text></svg>
+        </div>
+      </div>
+      <div class="hero__slide">
+        <div class="hero__copy">
+          <h1 class="hero__head">선납금 0원<br/>중고차 <em>구독 서비스</em></h1>
+          <p class="hero__sub">세금·정비·심사 걱정 없이 시작하세요.</p>
+        </div>
+        <div class="hero__img">
+          <svg viewBox="0 0 80 80" fill="none"><circle cx="40" cy="40" r="36" fill="#E8F0FF"/><path d="M18 48h44v-6l-7-11H25l-7 11v6z" fill="#1A1A1A"/><circle cx="28" cy="50" r="4" fill="#FFF"/><circle cx="52" cy="50" r="4" fill="#FFF"/></svg>
+        </div>
+      </div>
+    </div>
+    <div class="hero__counter"><span id="heroIdx">1</span> / 3</div>
+  </section>
+
+  <!-- QUICK -->
+  <section class="quick-row">
+    <div class="quick">
+      <div class="quick__text"><div class="quick__title">구독 vs 렌트</div><div class="quick__sub">어떤 상품이 더 합리적일까?</div></div>
+      <div class="quick__icon"><svg viewBox="0 0 56 56" fill="none"><circle cx="28" cy="28" r="24" fill="#E8F0FF"/><path d="M28 16v18 M28 40v0" stroke="#3B6EF5" stroke-width="3" stroke-linecap="round"/></svg></div>
+    </div>
+    <div class="quick">
+      <div class="quick__text"><div class="quick__title">특가 차량</div><div class="quick__sub">이번 주 할인 차량</div></div>
+      <div class="quick__icon"><svg viewBox="0 0 56 56" fill="none"><circle cx="28" cy="28" r="24" fill="#FFE9E0"/><path d="M18 28l8 8 14-14" stroke="#FF6A3D" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    </div>
+    <div class="quick">
+      <div class="quick__text"><div class="quick__title">업커밍</div><div class="quick__sub">곧 출고될 차량 둘러보기</div></div>
+      <div class="quick__icon"><svg viewBox="0 0 56 56" fill="none"><circle cx="28" cy="28" r="24" fill="#F0F0FF"/><circle cx="28" cy="28" r="10" stroke="#6E59E0" stroke-width="3" fill="none"/><path d="M28 22v6l4 3" stroke="#6E59E0" stroke-width="3" stroke-linecap="round"/></svg></div>
+    </div>
+    <div class="quick">
+      <div class="quick__text"><div class="quick__title">고객센터</div><div class="quick__sub">자주 묻는 질문</div></div>
+      <div class="quick__icon"><svg viewBox="0 0 56 56" fill="none"><circle cx="28" cy="28" r="24" fill="#E6F7EE"/><path d="M22 24a6 6 0 1112 0c0 3-3.5 4-3.5 7 M28 39v.5" stroke="#1FA363" stroke-width="3" stroke-linecap="round"/></svg></div>
+    </div>
+  </section>
+
+  <!-- VEHICLES -->
+  <section class="section">
+    <header class="section__head">
+      <h2 class="section__title">차량 둘러보기</h2>
+      <div class="section__head-right">
+        <div class="slider-controls">
+          <button class="slider-arrow" id="sliderPrev" aria-label="이전 차량">
+            <svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg>
+          </button>
+          <span class="slider-controls__page"><span id="sliderCur">1</span><em> / </em><span id="sliderTotal">3</span></span>
+          <button class="slider-arrow" id="sliderNext" aria-label="다음 차량">
+            <svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>
+          </button>
+        </div>
+        <button class="sort">추천순<svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button>
+      </div>
+    </header>
+
+    <nav class="type-tabs">
+      <button class="type-tab is-active">전체</button>
+      <button class="type-tab">구독</button>
+      <button class="type-tab">렌트</button>
+      <button class="type-tab">슈퍼카</button>
+    </nav>
+
+    <div class="brand-strip">
+      <button class="brand-item is-active">
+        <div class="brand-item__circle"><span class="brand-item__icon"><svg viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></span></div>
+        <span class="brand-item__label">전체</span>
+      </button>
+      <button class="brand-item"><div class="brand-item__circle"><span class="brand-item__icon" style="font-weight:800; font-size:13px;">BMW</span></div><span class="brand-item__label">BMW</span></button>
+      <button class="brand-item"><div class="brand-item__circle"><span class="brand-item__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 3L12 12 18.5 18.5 M12 3L12 12 5.5 18.5 M12 3L12 12 12 22"/></svg></span></div><span class="brand-item__label">벤츠</span></button>
+      <button class="brand-item"><div class="brand-item__circle"><span class="brand-item__icon"><svg viewBox="0 0 28 18" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="5" cy="9" r="4"/><circle cx="11" cy="9" r="4"/><circle cx="17" cy="9" r="4"/><circle cx="23" cy="9" r="4"/></svg></span></div><span class="brand-item__label">아우디</span></button>
+      <button class="brand-item"><div class="brand-item__circle"><span class="brand-item__icon" style="font-weight:700; font-size:11px;">현대</span></div><span class="brand-item__label">현대</span></button>
+      <button class="brand-item"><div class="brand-item__circle"><span class="brand-item__icon" style="font-weight:700; font-size:11px;">KIA</span></div><span class="brand-item__label">기아</span></button>
+      <button class="brand-item"><div class="brand-item__circle"><span class="brand-item__icon" style="font-weight:700; font-size:10px; letter-spacing:-0.02em;">GENESIS</span></div><span class="brand-item__label">제네시스</span></button>
+      <button class="brand-item"><div class="brand-item__circle"><span class="brand-item__icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3 10h-2v8h-2v-8H9z"/></svg></span></div><span class="brand-item__label">테슬라</span></button>
+      <button class="brand-item"><div class="brand-item__circle"><span class="brand-item__icon" style="font-weight:800; font-size:12px;">MINI</span></div><span class="brand-item__label">MINI</span></button>
+      <button class="brand-item"><div class="brand-item__circle"><span class="brand-item__icon" style="font-weight:600; font-size:10px;">포르쉐</span></div><span class="brand-item__label">포르쉐</span></button>
+      <button class="brand-item"><div class="brand-item__circle"><span class="brand-item__icon" style="font-weight:600; font-size:11px;">기타</span></div><span class="brand-item__label">기타</span></button>
+    </div>
+
+    <!-- VEHICLES SLIDER (PC) / GRID (mobile/tablet) -->
+    <div class="vehicles-slider" id="vehiclesSlider">
+      <div class="vehicles-track" id="vehiclesTrack">
+
+        <a href="/vehicles/1" class="vcard">
+          <div class="vcard__top">
+            <div class="vcard__title-wrap">
+              <h3 class="vcard__name">CLE200 Cabriolet <span class="vbadge is-sub">구독</span><span class="vbadge is-fast">빠른 출고</span></h3>
+            </div>
+            <div class="vcard__arrow"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div>
+          </div>
+          <div class="vcard__price">월 239만원<span class="vcard__price-from">~ 월 265만원</span></div>
+          <div class="vcard__meta"><span>신차가 6,626만원</span><span>2025</span></div>
+          <div class="vcard__image"><img src="https://images.unsplash.com/photo-1542362567-b07e54358753?w=800&q=85" alt="" /></div>
+        </a>
+
+        <a href="/vehicles/2" class="vcard">
+          <div class="vcard__top">
+            <div class="vcard__title-wrap">
+              <h3 class="vcard__name">A5 Sportback 40 TFSI quattro <span class="vbadge is-sub">구독</span></h3>
+            </div>
+            <div class="vcard__arrow"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div>
+          </div>
+          <div class="vcard__price">월 126만원<span class="vcard__price-from">~ 월 142만원</span></div>
+          <div class="vcard__meta"><span>신차가 7,180만원</span><span>2024</span></div>
+          <div class="vcard__image"><img src="https://images.unsplash.com/photo-1617814076367-b759c7d7e738?w=800&q=85" alt="" /></div>
+        </a>
+
+        <a href="/vehicles/3" class="vcard">
+          <div class="vcard__top">
+            <div class="vcard__title-wrap">
+              <h3 class="vcard__name">5 Series 530i <span class="vbadge is-sub">구독</span><span class="vbadge is-deal">특가</span></h3>
+            </div>
+            <div class="vcard__arrow"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div>
+          </div>
+          <div class="vcard__price">월 98만원<span class="vcard__price-from">~ 월 115만원</span></div>
+          <div class="vcard__meta"><span>신차가 7,950만원</span><span>2023</span></div>
+          <div class="vcard__image"><img src="https://images.unsplash.com/photo-1555215695-3004980ad54e?w=800&q=85" alt="" /></div>
+        </a>
+
+        <a href="/vehicles/4" class="vcard">
+          <div class="vcard__top">
+            <div class="vcard__title-wrap">
+              <h3 class="vcard__name">GLE 450 4MATIC <span class="vbadge is-rent">렌트</span></h3>
+            </div>
+            <div class="vcard__arrow"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div>
+          </div>
+          <div class="vcard__price">월 168만원</div>
+          <div class="vcard__meta"><span>신차가 1억 1,230만원</span><span>2024</span></div>
+          <div class="vcard__image"><img src="https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?w=800&q=85" alt="" /></div>
+        </a>
+
+        <a href="/vehicles/5" class="vcard">
+          <div class="vcard__top">
+            <div class="vcard__title-wrap">
+              <h3 class="vcard__name">911 Carrera S <span class="vbadge is-new">NEW</span><span class="vbadge is-sub">구독</span></h3>
+            </div>
+            <div class="vcard__arrow"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div>
+          </div>
+          <div class="vcard__price">월 389만원<span class="vcard__price-from">~ 월 420만원</span></div>
+          <div class="vcard__meta"><span>신차가 1억 8,500만원</span><span>2022</span></div>
+          <div class="vcard__image"><img src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=800&q=85" alt="" /></div>
+        </a>
+
+        <a href="/vehicles/6" class="vcard is-sold">
+          <div class="vcard__top">
+            <div class="vcard__title-wrap">
+              <h3 class="vcard__name">Range Rover Vogue <span class="vbadge is-sub" style="background:#1A1A1A; color:white;">SOLD</span></h3>
+            </div>
+            <div class="vcard__arrow"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div>
+          </div>
+          <div class="vcard__price">월 285만원</div>
+          <div class="vcard__meta"><span>신차가 1억 7,200만원</span><span>2023</span></div>
+          <div class="vcard__image"><img src="https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=800&q=85" alt="" /></div>
+        </a>
+
+        <a href="/vehicles/7" class="vcard">
+          <div class="vcard__top">
+            <div class="vcard__title-wrap">
+              <h3 class="vcard__name">M3 Competition <span class="vbadge is-sub">구독</span><span class="vbadge is-fast">빠른 출고</span></h3>
+            </div>
+            <div class="vcard__arrow"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div>
+          </div>
+          <div class="vcard__price">월 312만원<span class="vcard__price-from">~ 월 340만원</span></div>
+          <div class="vcard__meta"><span>신차가 1억 2,500만원</span><span>2022</span></div>
+          <div class="vcard__image"><img src="https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=800&q=85" alt="" /></div>
+        </a>
+
+        <a href="/vehicles/8" class="vcard">
+          <div class="vcard__top">
+            <div class="vcard__title-wrap">
+              <h3 class="vcard__name">G80 Sport <span class="vbadge is-sub">구독</span></h3>
+            </div>
+            <div class="vcard__arrow"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div>
+          </div>
+          <div class="vcard__price">월 89만원<span class="vcard__price-from">~ 월 105만원</span></div>
+          <div class="vcard__meta"><span>신차가 8,200만원</span><span>2023</span></div>
+          <div class="vcard__image"><img src="https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?w=800&q=85" alt="" /></div>
+        </a>
+
+        <a href="/vehicles/9" class="vcard">
+          <div class="vcard__top">
+            <div class="vcard__title-wrap">
+              <h3 class="vcard__name">Cayenne Turbo <span class="vbadge is-rent">렌트</span><span class="vbadge is-deal">특가</span></h3>
+            </div>
+            <div class="vcard__arrow"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div>
+          </div>
+          <div class="vcard__price">월 425만원</div>
+          <div class="vcard__meta"><span>신차가 2억 1,000만원</span><span>2021</span></div>
+          <div class="vcard__image"><img src="https://images.unsplash.com/photo-1617814076367-b759c7d7e738?w=800&q=85" alt="" /></div>
+        </a>
+
+        <a href="/vehicles/10" class="vcard">
+          <div class="vcard__top">
+            <div class="vcard__title-wrap">
+              <h3 class="vcard__name">Model S Plaid <span class="vbadge is-new">NEW</span><span class="vbadge is-sub">구독</span></h3>
+            </div>
+            <div class="vcard__arrow"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div>
+          </div>
+          <div class="vcard__price">월 298만원<span class="vcard__price-from">~ 월 320만원</span></div>
+          <div class="vcard__meta"><span>신차가 1억 5,800만원</span><span>2023</span></div>
+          <div class="vcard__image"><img src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=800&q=85" alt="" /></div>
+        </a>
+
+        <a href="/vehicles/11" class="vcard">
+          <div class="vcard__top">
+            <div class="vcard__title-wrap">
+              <h3 class="vcard__name">Q8 50 TDI <span class="vbadge is-sub">구독</span></h3>
+            </div>
+            <div class="vcard__arrow"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div>
+          </div>
+          <div class="vcard__price">월 215만원<span class="vcard__price-from">~ 월 248만원</span></div>
+          <div class="vcard__meta"><span>신차가 1억 3,900만원</span><span>2023</span></div>
+          <div class="vcard__image"><img src="https://images.unsplash.com/photo-1555215695-3004980ad54e?w=800&q=85" alt="" /></div>
+        </a>
+
+        <a href="/vehicles/12" class="vcard">
+          <div class="vcard__top">
+            <div class="vcard__title-wrap">
+              <h3 class="vcard__name">S 580 4MATIC <span class="vbadge is-sub">구독</span><span class="vbadge is-fast">빠른 출고</span></h3>
+            </div>
+            <div class="vcard__arrow"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div>
+          </div>
+          <div class="vcard__price">월 478만원<span class="vcard__price-from">~ 월 520만원</span></div>
+          <div class="vcard__meta"><span>신차가 2억 1,700만원</span><span>2022</span></div>
+          <div class="vcard__image"><img src="https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=800&q=85" alt="" /></div>
+        </a>
+
+      </div>
+    </div>
+
+    <!-- More button (mobile/tablet) -->
+    <div class="more-btn-wrap">
+      <button class="more-btn">더 많은 차량 보기<svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button>
+    </div>
+
+    <!-- PC: 전체 보기 링크 -->
+    <div class="slider-foot">
+      <a href="/vehicles">전체 차량 보기</a>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <div class="footer__inner">
+    <div class="footer__row">
+      <a href="/terms/service">이용약관</a>
+      <a href="/terms/privacy">개인정보처리방침</a>
+      <a href="/faq">고객센터</a>
+      <a href="#" onclick="window.open('https://pf.kakao.com/_xxxxx/chat','_blank')">1:1 문의</a>
+    </div>
+    <p class="footer__biz">
+      (주)○○○ &nbsp;|&nbsp; 사업자등록번호: 000-00-00000<br/>
+      통신판매업신고번호: 0000-서울○○-00000 &nbsp;|&nbsp; 대표: ○○○<br/>
+      서울특별시 ○○구 ○○로 00, 0층<br/>
+      © 2026 ○○○ Inc. All rights reserved.
+    </p>
+  </div>
+</footer>
+
+<a href="https://pf.kakao.com/_xxxxx/chat" target="_blank" rel="noopener" class="kakao-fab">
+  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3C6.48 3 2 6.58 2 11c0 2.79 1.84 5.23 4.6 6.66-.2.71-.7 2.51-.8 2.9-.13.5.18.49.38.36.16-.1 2.5-1.7 3.51-2.39.76.11 1.53.18 2.31.18 5.52 0 10-3.58 10-8s-4.48-8-10-8z"/></svg>
+  1:1 문의
+</a>
+
+<script>
+// Header scroll
+const header = document.getElementById('header');
+window.addEventListener('scroll', () => {
+  header.classList.toggle('is-scrolled', window.scrollY > 8);
+}, { passive: true });
+
+// Hero rolling
+const slides = document.querySelectorAll('.hero__slide');
+const heroIdx = document.getElementById('heroIdx');
+let cur = 0;
+setInterval(() => {
+  slides[cur].classList.remove('is-active');
+  cur = (cur + 1) % slides.length;
+  slides[cur].classList.add('is-active');
+  heroIdx.textContent = cur + 1;
+}, 5000);
+
+// Tabs
+document.querySelectorAll('.type-tab').forEach(t => {
+  t.addEventListener('click', () => {
+    document.querySelectorAll('.type-tab').forEach(x => x.classList.remove('is-active'));
+    t.classList.add('is-active');
+  });
+});
+
+// Brand
+document.querySelectorAll('.brand-item').forEach(b => {
+  b.addEventListener('click', () => {
+    document.querySelectorAll('.brand-item').forEach(x => x.classList.remove('is-active'));
+    b.classList.add('is-active');
+  });
+});
+
+// ============================================================
+// VEHICLES SLIDER (PC only, ≥1024px)
+// Layout: 2 rows × 2 cols visible = 4 cards per page
+// CSS grid-auto-flow: column makes items flow top-to-bottom first,
+// so cards 1,2 stack in col 1, cards 3,4 stack in col 2, etc.
+// ============================================================
+(function() {
+  const slider = document.getElementById('vehiclesSlider');
+  const track = document.getElementById('vehiclesTrack');
+  const prevBtn = document.getElementById('sliderPrev');
+  const nextBtn = document.getElementById('sliderNext');
+  const curLabel = document.getElementById('sliderCur');
+  const totalLabel = document.getElementById('sliderTotal');
+
+  const CARDS_PER_PAGE = 4;  // 2 cols × 2 rows
+  const GAP_PX = 20;          // matches CSS gap on PC
+  let currentPage = 0;
+  let totalPages = 1;
+
+  function isPCSlider() {
+    return window.matchMedia('(min-width: 1024px)').matches;
+  }
+
+  function update() {
+    if (!isPCSlider()) {
+      track.style.transform = '';
+      return;
+    }
+    totalPages = Math.max(1, Math.ceil(track.children.length / CARDS_PER_PAGE));
+    if (currentPage >= totalPages) currentPage = totalPages - 1;
+    if (currentPage < 0) currentPage = 0;
+
+    // Translate by container width + gap per page
+    const pageOffset = slider.clientWidth + GAP_PX;
+    track.style.transform = `translateX(-${currentPage * pageOffset}px)`;
+
+    curLabel.textContent = currentPage + 1;
+    totalLabel.textContent = totalPages;
+    prevBtn.disabled = currentPage === 0;
+    nextBtn.disabled = currentPage >= totalPages - 1;
+  }
+
+  prevBtn.addEventListener('click', () => {
+    if (currentPage > 0) { currentPage--; update(); }
+  });
+  nextBtn.addEventListener('click', () => {
+    if (currentPage < totalPages - 1) { currentPage++; update(); }
+  });
+
+  // Keyboard navigation
+  document.addEventListener('keydown', (e) => {
+    if (!isPCSlider()) return;
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+    if (e.key === 'ArrowLeft') prevBtn.click();
+    if (e.key === 'ArrowRight') nextBtn.click();
+  });
+
+  // Recalculate on resize (debounced)
+  let resizeTimer;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(update, 120);
+  });
+
+  update();
+})();
+</script>
+
+</body>
+</html>

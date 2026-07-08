@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+<title>CLE200 Cabriolet · 차량 상세</title>
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet">
+<style>
+:root {
+  --bg: #FFFFFF; --surface: #F4F6F9; --surface-2: #EDF0F5;
+  --ink: #111111; --ink-2: #4B5563; --muted: #8B92A0;
+  --line: #E5E7EB; --line-2: #EEF1F5;
+  --primary: #3B6EF5; --primary-soft: #E8F0FF; --primary-deep: #2952CC;
+  --warn: #FF6A3D; --success: #1FA363;
+  --kakao: #FEE500; --kakao-ink: #3A1D1D;
+  --radius-card: 20px; --radius-sm: 12px; --radius-pill: 999px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { background: var(--bg); color: var(--ink); font-family: 'Pretendard', sans-serif; -webkit-font-smoothing: antialiased; font-feature-settings: "ss01","tnum"; }
+a { color: inherit; text-decoration: none; }
+button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; padding: 0; }
+img { display: block; max-width: 100%; }
+
+/* HEADER */
+.header { position: sticky; top: 0; z-index: 50; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); }
+.header__inner { max-width: 1280px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; padding: 14px 20px; height: 60px; }
+@media (min-width: 1024px) { .header__inner { padding: 16px 32px; height: 72px; } }
+.logo { font-size: 22px; font-weight: 800; letter-spacing: -0.04em; color: var(--primary); }
+.logo em { font-style: normal; color: var(--ink); }
+@media (min-width: 1024px) { .logo { font-size: 26px; } }
+.nav-pc { display: none; gap: 32px; font-size: 15px; font-weight: 500; }
+@media (min-width: 1024px) { .nav-pc { display: flex; } }
+.nav-pc a { color: var(--ink-2); }
+.nav-pc a.is-active { color: var(--ink); font-weight: 600; }
+.header__right { display: flex; align-items: center; gap: 14px; }
+.header__lang { display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; border: 1px solid var(--line); border-radius: var(--radius-pill); font-size: 13px; font-weight: 500; color: var(--ink-2); }
+.header__lang svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 1.6; }
+.header__my { font-size: 14px; font-weight: 600; color: var(--ink); }
+
+/* BACK BAR (mobile) */
+.back-bar { display: flex; align-items: center; padding: 8px 12px; }
+@media (min-width: 1024px) { .back-bar { display: none; } }
+.back-bar a { display: inline-flex; align-items: center; gap: 4px; padding: 8px 6px; font-size: 14px; font-weight: 500; color: var(--ink); }
+.back-bar svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2; }
+
+/* BREADCRUMB (PC) */
+.crumb { display: none; max-width: 1280px; margin: 0 auto; padding: 20px 32px 0; font-size: 13px; color: var(--muted); font-weight: 500; }
+@media (min-width: 1024px) { .crumb { display: block; } }
+.crumb a:hover { color: var(--ink); }
+.crumb span { margin: 0 6px; }
+.crumb .now { color: var(--ink); }
+
+/* PAGE LAYOUT */
+.page { max-width: 1280px; margin: 0 auto; padding: 0 16px 100px; }
+@media (min-width: 1024px) { .page { padding: 24px 32px 120px; display: grid; grid-template-columns: minmax(0, 1fr) 380px; gap: 48px; align-items: flex-start; } }
+
+main { min-width: 0; }
+
+/* GALLERY */
+.gallery { margin: 0 -16px 20px; }
+@media (min-width: 1024px) { .gallery { margin: 0 0 24px; } }
+.gallery__main { position: relative; aspect-ratio: 4/3; background: var(--surface); overflow: hidden; }
+@media (min-width: 1024px) { .gallery__main { border-radius: var(--radius-card); aspect-ratio: 16/10; } }
+.gallery__main img { width: 100%; height: 100%; object-fit: cover; }
+.gallery__nav { position: absolute; top: 50%; transform: translateY(-50%); width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,0.95); display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+.gallery__nav.prev { left: 12px; }
+.gallery__nav.next { right: 12px; }
+.gallery__nav svg { width: 18px; height: 18px; stroke: var(--ink); fill: none; stroke-width: 2; }
+.gallery__counter { position: absolute; bottom: 12px; right: 12px; background: rgba(17,17,17,0.65); color: white; padding: 4px 10px; border-radius: var(--radius-pill); font-size: 12px; font-weight: 500; }
+
+.gallery__thumbs { display: flex; gap: 6px; padding: 10px 16px 0; overflow-x: auto; scrollbar-width: none; }
+@media (min-width: 1024px) { .gallery__thumbs { display: grid; grid-template-columns: repeat(6, 1fr); padding: 12px 0 0; gap: 8px; overflow: visible; } }
+.gallery__thumbs::-webkit-scrollbar { display: none; }
+.gallery__thumb { flex-shrink: 0; width: 64px; aspect-ratio: 4/3; background: var(--surface); border-radius: 8px; overflow: hidden; cursor: pointer; opacity: 0.55; transition: opacity 160ms; border: 2px solid transparent; }
+@media (min-width: 1024px) { .gallery__thumb { width: auto; border-radius: 10px; } }
+.gallery__thumb.is-active { opacity: 1; border-color: var(--primary); }
+.gallery__thumb img { width: 100%; height: 100%; object-fit: cover; }
+
+/* VEHICLE HEAD */
+.v-head { padding: 20px 0 24px; border-bottom: 1px solid var(--line); }
+@media (min-width: 1024px) { .v-head { padding: 8px 0 32px; } }
+.v-head__brand { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 500; color: var(--ink-2); margin-bottom: 8px; }
+.v-head__brand::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--primary); }
+.v-head__title { font-size: 26px; font-weight: 800; letter-spacing: -0.025em; line-height: 1.2; margin-bottom: 12px; display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+@media (min-width: 1024px) { .v-head__title { font-size: 34px; } }
+.vbadge { display: inline-flex; align-items: center; font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 8px; letter-spacing: -0.01em; }
+.vbadge.is-sub { background: #E8EAEF; color: #4B5563; }
+.vbadge.is-fast { background: var(--primary-soft); color: var(--primary); }
+.vbadge.is-new { background: var(--ink); color: white; }
+.v-head__sub { font-size: 14px; color: var(--ink-2); line-height: 1.55; max-width: 50ch; }
+
+.v-head__price { display: flex; align-items: baseline; gap: 8px; margin-top: 18px; }
+.v-head__price-main { font-size: 30px; font-weight: 800; letter-spacing: -0.025em; color: var(--ink); }
+@media (min-width: 1024px) { .v-head__price-main { font-size: 38px; } }
+.v-head__price-sub { font-size: 14px; color: var(--muted); font-weight: 500; }
+
+/* SPEC BLOCKS */
+.specs { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 24px 0; border-bottom: 1px solid var(--line); }
+@media (min-width: 640px) { .specs { grid-template-columns: repeat(4, 1fr); } }
+.spec { background: var(--surface); border-radius: var(--radius-sm); padding: 16px; }
+@media (min-width: 1024px) { .spec { padding: 18px 20px; } }
+.spec__label { font-size: 12px; color: var(--muted); font-weight: 500; margin-bottom: 6px; }
+.spec__value { font-size: 18px; font-weight: 700; letter-spacing: -0.015em; }
+@media (min-width: 1024px) { .spec__value { font-size: 20px; } }
+.spec__value small { font-size: 12px; font-weight: 500; color: var(--muted); margin-left: 2px; }
+
+/* SECTION (탭별 컨텐츠) */
+.anchor-tabs { position: sticky; top: 60px; z-index: 30; background: white; border-bottom: 1px solid var(--line); margin: 0 -16px 24px; overflow-x: auto; scrollbar-width: none; }
+@media (min-width: 1024px) { .anchor-tabs { top: 72px; margin: 32px 0 32px; } }
+.anchor-tabs::-webkit-scrollbar { display: none; }
+.anchor-tabs__inner { display: flex; gap: 24px; padding: 0 16px; min-width: max-content; }
+@media (min-width: 1024px) { .anchor-tabs__inner { padding: 0; gap: 32px; } }
+.anchor-tab { padding: 14px 0; font-size: 14px; font-weight: 500; color: var(--muted); border-bottom: 2px solid transparent; margin-bottom: -1px; white-space: nowrap; }
+.anchor-tab.is-active { color: var(--ink); font-weight: 700; border-color: var(--ink); }
+@media (min-width: 1024px) { .anchor-tab { font-size: 15px; padding: 16px 0; } }
+
+.section { padding: 8px 0 48px; }
+.section__title { font-size: 20px; font-weight: 800; letter-spacing: -0.025em; margin-bottom: 16px; }
+@media (min-width: 1024px) { .section__title { font-size: 24px; margin-bottom: 20px; } }
+.section__title em { font-style: normal; color: var(--primary); }
+
+/* BENEFITS */
+.benefits { display: grid; grid-template-columns: 1fr; gap: 10px; }
+@media (min-width: 640px) { .benefits { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1024px) { .benefits { grid-template-columns: repeat(3, 1fr); gap: 14px; } }
+.benefit { background: var(--surface); border-radius: var(--radius-card); padding: 22px; }
+.benefit__icon { width: 36px; height: 36px; border-radius: 10px; background: var(--primary-soft); display: flex; align-items: center; justify-content: center; margin-bottom: 14px; }
+.benefit__icon svg { width: 18px; height: 18px; stroke: var(--primary); fill: none; stroke-width: 2; }
+.benefit__title { font-size: 15px; font-weight: 700; letter-spacing: -0.015em; margin-bottom: 6px; }
+.benefit__desc { font-size: 13px; color: var(--ink-2); line-height: 1.55; }
+
+/* COMPARE TABLE */
+.compare-wrap { overflow-x: auto; margin: 0 -16px; padding: 0 16px; scrollbar-width: none; }
+.compare-wrap::-webkit-scrollbar { display: none; }
+.compare { width: 100%; min-width: 520px; border-collapse: separate; border-spacing: 0; background: var(--surface); border-radius: var(--radius-card); overflow: hidden; }
+.compare thead th { padding: 16px 12px; font-size: 13px; font-weight: 600; color: var(--ink-2); text-align: center; background: var(--surface-2); }
+.compare thead th.is-us { color: var(--primary); position: relative; }
+.compare thead th.is-us::after { content: '추천'; display: inline-block; margin-left: 6px; font-size: 10px; padding: 2px 6px; background: var(--primary); color: white; border-radius: 4px; font-weight: 700; vertical-align: middle; }
+.compare thead th:first-child { text-align: left; }
+.compare tbody td { padding: 14px 12px; font-size: 13px; text-align: center; border-top: 1px solid var(--line); }
+.compare tbody td:first-child { text-align: left; color: var(--ink-2); font-weight: 500; }
+.compare tbody td.us { color: var(--primary); font-weight: 700; background: rgba(59, 110, 245, 0.04); }
+.compare tbody td.no { color: var(--muted); }
+
+/* PROCESS STEPS */
+.process { display: grid; grid-template-columns: 1fr; gap: 10px; }
+@media (min-width: 768px) { .process { grid-template-columns: repeat(4, 1fr); } }
+.process-step { background: var(--surface); border-radius: var(--radius-card); padding: 22px; position: relative; }
+.process-step__num { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; background: var(--ink); color: white; border-radius: 50%; font-size: 13px; font-weight: 700; margin-bottom: 14px; }
+.process-step__title { font-size: 15px; font-weight: 700; letter-spacing: -0.015em; margin-bottom: 6px; }
+.process-step__desc { font-size: 13px; color: var(--ink-2); line-height: 1.55; }
+
+/* FAQ */
+.faq-list { background: var(--surface); border-radius: var(--radius-card); padding: 4px 22px; }
+@media (min-width: 1024px) { .faq-list { padding: 8px 28px; } }
+.faq-item { border-bottom: 1px solid var(--line); }
+.faq-item:last-child { border-bottom: none; }
+.faq-q { width: 100%; text-align: left; padding: 18px 0; display: flex; align-items: center; justify-content: space-between; gap: 16px; font-size: 15px; font-weight: 500; letter-spacing: -0.01em; }
+.faq-q__icon { width: 20px; height: 20px; flex-shrink: 0; position: relative; color: var(--muted); }
+.faq-q__icon::before, .faq-q__icon::after { content: ''; position: absolute; left: 50%; top: 50%; background: currentColor; transition: transform 280ms; }
+.faq-q__icon::before { width: 1.5px; height: 12px; transform: translate(-50%,-50%); }
+.faq-q__icon::after { width: 12px; height: 1.5px; transform: translate(-50%,-50%); }
+.faq-item.is-open .faq-q__icon::before { transform: translate(-50%,-50%) rotate(90deg); }
+.faq-a { max-height: 0; overflow: hidden; transition: max-height 280ms ease; }
+.faq-a__inner { padding: 0 0 18px; font-size: 14px; color: var(--ink-2); line-height: 1.65; }
+
+/* RELATED */
+.related { padding: 8px 0 0; }
+.related-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+@media (min-width: 1024px) { .related-grid { grid-template-columns: repeat(4, 1fr); gap: 16px; } }
+.r-card { background: var(--surface); border-radius: var(--radius-sm); overflow: hidden; cursor: pointer; transition: background 160ms; }
+.r-card:hover { background: var(--surface-2); }
+.r-card__media { aspect-ratio: 4/3; padding: 16px; display: flex; align-items: center; justify-content: center; }
+.r-card__media img { max-width: 100%; max-height: 100%; object-fit: contain; filter: drop-shadow(0 8px 12px rgba(0,0,0,0.1)); }
+.r-card__body { padding: 0 14px 16px; }
+.r-card__brand { font-size: 11px; color: var(--muted); font-weight: 500; margin-bottom: 2px; }
+.r-card__name { font-size: 14px; font-weight: 700; letter-spacing: -0.015em; margin-bottom: 6px; }
+.r-card__price { font-size: 15px; font-weight: 800; color: var(--ink); }
+
+/* ============================================================
+   SIDE PANEL (PC sticky CTA)
+   ============================================================ */
+.side { display: none; }
+@media (min-width: 1024px) { .side { display: block; position: sticky; top: 96px; align-self: start; } }
+.side-card { background: var(--surface); border-radius: var(--radius-card); padding: 26px; }
+.side-card__brand { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 500; color: var(--ink-2); margin-bottom: 8px; }
+.side-card__brand::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--primary); }
+.side-card__name { font-size: 22px; font-weight: 800; letter-spacing: -0.025em; margin-bottom: 14px; line-height: 1.2; }
+.side-card__price-label { font-size: 12px; color: var(--muted); margin-bottom: 4px; font-weight: 500; }
+.side-card__price { font-size: 30px; font-weight: 800; letter-spacing: -0.025em; }
+.side-card__price small { font-size: 14px; font-weight: 500; color: var(--muted); margin-left: 4px; }
+.side-card__divider { height: 1px; background: var(--line); margin: 20px 0; }
+
+.side-card__benefits { display: flex; flex-direction: column; gap: 10px; margin-bottom: 22px; }
+.side-card__benefit { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--ink-2); }
+.side-card__benefit svg { width: 16px; height: 16px; stroke: var(--success); fill: none; stroke-width: 2.5; flex-shrink: 0; }
+
+.btn-kakao-cta { width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; background: var(--kakao); color: var(--kakao-ink); padding: 16px 20px; border-radius: var(--radius-pill); font-size: 16px; font-weight: 700; transition: transform 160ms; letter-spacing: -0.01em; }
+.btn-kakao-cta:hover { transform: translateY(-1px); }
+.btn-kakao-cta:active { transform: scale(0.98); }
+.btn-kakao-cta svg { width: 20px; height: 20px; }
+
+.btn-fav { width: 100%; margin-top: 10px; display: flex; align-items: center; justify-content: center; gap: 8px; background: white; color: var(--ink); padding: 14px 20px; border-radius: var(--radius-pill); font-size: 14px; font-weight: 600; border: 1.5px solid var(--line); transition: border-color 160ms; }
+.btn-fav:hover { border-color: var(--ink); }
+.btn-fav.is-active { background: var(--primary-soft); color: var(--primary); border-color: var(--primary); }
+.btn-fav svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 1.8; }
+.btn-fav.is-active svg { fill: currentColor; }
+
+.side-card__hours { margin-top: 18px; padding-top: 18px; border-top: 1px solid var(--line); font-size: 12px; color: var(--muted); line-height: 1.65; }
+.side-card__hours strong { display: block; color: var(--ink-2); font-weight: 600; margin-bottom: 4px; }
+
+/* MOBILE BOTTOM CTA */
+.mobile-cta { position: fixed; left: 0; right: 0; bottom: 0; z-index: 70; background: white; border-top: 1px solid var(--line); padding: 12px 16px; display: flex; gap: 8px; align-items: center; box-shadow: 0 -4px 16px rgba(0,0,0,0.04); }
+@media (min-width: 1024px) { .mobile-cta { display: none; } }
+.mobile-cta__price { flex: 0 0 auto; padding-right: 8px; }
+.mobile-cta__price-label { font-size: 11px; color: var(--muted); font-weight: 500; }
+.mobile-cta__price-value { font-size: 18px; font-weight: 800; letter-spacing: -0.02em; }
+.mobile-cta .btn-kakao-cta { flex: 1; padding: 14px 16px; font-size: 14px; }
+.mobile-cta .btn-fav-icon { width: 44px; height: 44px; padding: 0; flex-shrink: 0; background: var(--surface); border-radius: 50%; border: 1px solid var(--line); display: flex; align-items: center; justify-content: center; color: var(--ink); }
+.mobile-cta .btn-fav-icon.is-active { background: var(--primary-soft); color: var(--primary); border-color: var(--primary); }
+.mobile-cta .btn-fav-icon svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 1.8; }
+.mobile-cta .btn-fav-icon.is-active svg { fill: currentColor; }
+
+/* Hide floating kakao on mobile detail (bottom CTA replaces it) */
+.kakao-fab { position: fixed; z-index: 60; bottom: 32px; right: 32px; display: inline-flex; align-items: center; gap: 8px; background: var(--kakao); color: var(--kakao-ink); padding: 14px 22px; border-radius: var(--radius-pill); font-size: 15px; font-weight: 700; box-shadow: 0 6px 18px rgba(0,0,0,0.12); }
+.kakao-fab svg { width: 20px; height: 20px; }
+@media (max-width: 1023px) { .kakao-fab { display: none; } }
+
+/* FOOTER */
+.footer { margin-top: 80px; padding: 32px 16px 28px; background: var(--surface); font-size: 12px; color: var(--ink-2); line-height: 1.7; }
+.footer__inner { max-width: 1280px; margin: 0 auto; }
+.footer__row { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 16px; font-weight: 500; }
+.footer__biz { font-size: 11px; color: var(--muted); }
+@media (max-width: 1023px) { .footer { padding-bottom: 92px; } }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header__inner">
+    <a href="/" class="logo">GA<em>:RAGE</em></a>
+    <nav class="nav-pc">
+      <a href="/" class="is-active">홈</a>
+      <a href="/?type=sub">구독</a>
+      <a href="/?type=rent">렌트</a>
+      <a href="/?type=super">슈퍼카</a>
+      <a href="/upcoming">업커밍</a>
+      <a href="/faq">고객센터</a>
+    </nav>
+    <div class="header__right">
+      <button class="header__lang"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18 M12 3a14 14 0 010 18 M12 3a14 14 0 000 18"/></svg>ENG</button>
+      <a href="/mypage" class="header__my">MY</a>
+    </div>
+  </div>
+</header>
+
+<div class="back-bar"><a href="/"><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg> 뒤로</a></div>
+
+<nav class="crumb">
+  <a href="/">홈</a><span>›</span><a href="/?brand=mercedes">벤츠</a><span>›</span><span class="now">CLE200 Cabriolet</span>
+</nav>
+
+<div class="page">
+
+  <main>
+    <!-- GALLERY -->
+    <section class="gallery">
+      <div class="gallery__main">
+        <img id="mainImg" src="https://images.unsplash.com/photo-1542362567-b07e54358753?w=1600&q=85" alt="" />
+        <button class="gallery__nav prev"><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></button>
+        <button class="gallery__nav next"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button>
+        <div class="gallery__counter">01 / 12</div>
+      </div>
+      <div class="gallery__thumbs">
+        <div class="gallery__thumb is-active"><img src="https://images.unsplash.com/photo-1542362567-b07e54358753?w=200" alt="" /></div>
+        <div class="gallery__thumb"><img src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=200" alt="" /></div>
+        <div class="gallery__thumb"><img src="https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=200" alt="" /></div>
+        <div class="gallery__thumb"><img src="https://images.unsplash.com/photo-1555215695-3004980ad54e?w=200" alt="" /></div>
+        <div class="gallery__thumb"><img src="https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?w=200" alt="" /></div>
+        <div class="gallery__thumb"><img src="https://images.unsplash.com/photo-1617814076367-b759c7d7e738?w=200" alt="" /></div>
+      </div>
+    </section>
+
+    <!-- HEAD -->
+    <section class="v-head">
+      <div class="v-head__brand">Mercedes-Benz</div>
+      <h1 class="v-head__title">CLE200 Cabriolet <span class="vbadge is-sub">구독</span><span class="vbadge is-fast">빠른 출고</span></h1>
+      <p class="v-head__sub">2025년식 풀옵션 모델. 검정 외장에 베이지 가죽 인테리어. 무사고 차량으로 현재 빠른 출고 가능.</p>
+      <div class="v-head__price">
+        <span class="v-head__price-main">월 239만원</span>
+        <span class="v-head__price-sub">~ 월 265만원</span>
+      </div>
+    </section>
+
+    <!-- SPEC -->
+    <section class="specs">
+      <div class="spec"><div class="spec__label">연식</div><div class="spec__value">2025</div></div>
+      <div class="spec"><div class="spec__label">색상</div><div class="spec__value">검정</div></div>
+      <div class="spec"><div class="spec__label">연료</div><div class="spec__value">가솔린</div></div>
+      <div class="spec"><div class="spec__label">주행거리</div><div class="spec__value">8,200<small>km</small></div></div>
+    </section>
+
+    <!-- ANCHOR TABS -->
+    <nav class="anchor-tabs">
+      <div class="anchor-tabs__inner">
+        <a class="anchor-tab is-active" href="#benefits">서비스 장점</a>
+        <a class="anchor-tab" href="#compare">비교</a>
+        <a class="anchor-tab" href="#process">이용 절차</a>
+        <a class="anchor-tab" href="#faq">자주 묻는 질문</a>
+      </div>
+    </nav>
+
+    <!-- BENEFITS -->
+    <section class="section" id="benefits">
+      <h2 class="section__title">왜 <em>구독</em>이 더 좋을까요?</h2>
+      <div class="benefits">
+        <div class="benefit">
+          <div class="benefit__icon"><svg viewBox="0 0 24 24"><path d="M5 13l4 4 10-10"/></svg></div>
+          <h3 class="benefit__title">수리비 0원</h3>
+          <p class="benefit__desc">정비, 부품 교체, 소모품 비용까지 모두 포함되어 추가 부담이 없습니다.</p>
+        </div>
+        <div class="benefit">
+          <div class="benefit__icon"><svg viewBox="0 0 24 24"><path d="M5 13l4 4 10-10"/></svg></div>
+          <h3 class="benefit__title">자동차세 대납</h3>
+          <p class="benefit__desc">자동차세도 구독 서비스에 포함. 따로 챙기지 않아도 됩니다.</p>
+        </div>
+        <div class="benefit">
+          <div class="benefit__icon"><svg viewBox="0 0 24 24"><path d="M5 13l4 4 10-10"/></svg></div>
+          <h3 class="benefit__title">일반 번호판</h3>
+          <p class="benefit__desc">하·허·호 아닌 일반 번호판으로, 내 차처럼 자유롭게 운행하세요.</p>
+        </div>
+        <div class="benefit">
+          <div class="benefit__icon"><svg viewBox="0 0 24 24"><path d="M5 13l4 4 10-10"/></svg></div>
+          <h3 class="benefit__title">중도 해지 자유</h3>
+          <p class="benefit__desc">생활에 변화가 생겨도 위약금 부담 없이 유연하게 변경 가능.</p>
+        </div>
+        <div class="benefit">
+          <div class="benefit__icon"><svg viewBox="0 0 24 24"><path d="M5 13l4 4 10-10"/></svg></div>
+          <h3 class="benefit__title">24시간 사고지원</h3>
+          <p class="benefit__desc">사고·고장 시 출동부터 정비까지 한 번에 처리해 드립니다.</p>
+        </div>
+        <div class="benefit">
+          <div class="benefit__icon"><svg viewBox="0 0 24 24"><path d="M5 13l4 4 10-10"/></svg></div>
+          <h3 class="benefit__title">신차급 컨디션</h3>
+          <p class="benefit__desc">2025년식, 주행거리 8,200km로 신차에 가까운 상태입니다.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- COMPARE -->
+    <section class="section" id="compare">
+      <h2 class="section__title">구독 vs 리스 vs 자차</h2>
+      <div class="compare-wrap">
+        <table class="compare">
+          <thead>
+            <tr>
+              <th></th>
+              <th class="is-us">구독</th>
+              <th>리스</th>
+              <th>자차</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>자동차세</td><td class="us">포함</td><td class="no">별도</td><td class="no">별도</td></tr>
+            <tr><td>소모품 교체</td><td class="us">포함</td><td class="no">별도</td><td class="no">별도</td></tr>
+            <tr><td>정기 점검</td><td class="us">포함</td><td class="no">별도</td><td class="no">별도</td></tr>
+            <tr><td>타이어 교환</td><td class="us">포함</td><td class="no">별도</td><td class="no">별도</td></tr>
+            <tr><td>감가 부담</td><td class="us">없음</td><td class="us">없음</td><td class="no">있음</td></tr>
+            <tr><td>중도 해지</td><td class="us">자유</td><td class="no">위약금</td><td class="no">매각</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- PROCESS -->
+    <section class="section" id="process">
+      <h2 class="section__title">간단한 이용 절차</h2>
+      <div class="process">
+        <div class="process-step">
+          <div class="process-step__num">1</div>
+          <h3 class="process-step__title">카카오톡 문의</h3>
+          <p class="process-step__desc">차량 페이지의 카카오톡 버튼으로 1:1 상담을 시작합니다.</p>
+        </div>
+        <div class="process-step">
+          <div class="process-step__num">2</div>
+          <h3 class="process-step__title">간편 심사</h3>
+          <p class="process-step__desc">필요한 서류와 신용 정보를 안내받습니다. 비대면으로 진행.</p>
+        </div>
+        <div class="process-step">
+          <div class="process-step__num">3</div>
+          <h3 class="process-step__title">계약 체결</h3>
+          <p class="process-step__desc">전자 계약으로 진행. 방문 없이 모든 절차가 완료됩니다.</p>
+        </div>
+        <div class="process-step">
+          <div class="process-step__num">4</div>
+          <h3 class="process-step__title">차량 인도</h3>
+          <p class="process-step__desc">원하시는 장소로 탁송. 인도와 함께 바로 이용 시작.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="section" id="faq">
+      <h2 class="section__title">자주 묻는 질문</h2>
+      <div class="faq-list">
+        <div class="faq-item is-open">
+          <button class="faq-q">제가 빌리고 가족이 운전해도 되나요?<span class="faq-q__icon"></span></button>
+          <div class="faq-a"><div class="faq-a__inner">보험 가입 시 지정 운전자를 추가하면 가능합니다. 다만 차량 관리 책임은 계약자께 있으니 유의해 주세요.</div></div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q">차량을 직접 보러 갈 수 있나요?<span class="faq-q__icon"></span></button>
+          <div class="faq-a"><div class="faq-a__inner">가능합니다. 카카오톡 1:1 문의로 사전 방문 일정을 조율해 주세요.</div></div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q">보증금이 필요한가요?<span class="faq-q__icon"></span></button>
+          <div class="faq-a"><div class="faq-a__inner">플랜에 따라 보증금이 있을 수 있습니다. 종료 시 반환되며, 정확한 금액은 상담 시 안내드립니다.</div></div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q">중도 해지 시 위약금이 있나요?<span class="faq-q__icon"></span></button>
+          <div class="faq-a"><div class="faq-a__inner">단기 플랜은 위약금이 없으며, 장기 플랜은 잔여 기간에 따른 정산이 발생할 수 있습니다.</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- RELATED -->
+    <section class="related">
+      <h2 class="section__title">다른 차량도 둘러보세요</h2>
+      <div class="related-grid">
+        <a href="/vehicles/2" class="r-card">
+          <div class="r-card__media"><img src="https://images.unsplash.com/photo-1617814076367-b759c7d7e738?w=600&q=85" alt="" /></div>
+          <div class="r-card__body">
+            <div class="r-card__brand">Audi</div>
+            <div class="r-card__name">A5 Sportback</div>
+            <div class="r-card__price">월 126만원~</div>
+          </div>
+        </a>
+        <a href="/vehicles/3" class="r-card">
+          <div class="r-card__media"><img src="https://images.unsplash.com/photo-1555215695-3004980ad54e?w=600&q=85" alt="" /></div>
+          <div class="r-card__body">
+            <div class="r-card__brand">BMW</div>
+            <div class="r-card__name">5 Series 530i</div>
+            <div class="r-card__price">월 98만원~</div>
+          </div>
+        </a>
+        <a href="/vehicles/4" class="r-card">
+          <div class="r-card__media"><img src="https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?w=600&q=85" alt="" /></div>
+          <div class="r-card__body">
+            <div class="r-card__brand">Mercedes-Benz</div>
+            <div class="r-card__name">GLE 450</div>
+            <div class="r-card__price">월 168만원</div>
+          </div>
+        </a>
+        <a href="/vehicles/5" class="r-card">
+          <div class="r-card__media"><img src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=600&q=85" alt="" /></div>
+          <div class="r-card__body">
+            <div class="r-card__brand">Porsche</div>
+            <div class="r-card__name">911 Carrera S</div>
+            <div class="r-card__price">월 389만원~</div>
+          </div>
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <!-- SIDE PANEL (PC) -->
+  <aside class="side">
+    <div class="side-card">
+      <div class="side-card__brand">Mercedes-Benz</div>
+      <h2 class="side-card__name">CLE200 Cabriolet</h2>
+      <div class="side-card__price-label">월 구독료</div>
+      <div class="side-card__price">239만원<small>부터</small></div>
+
+      <div class="side-card__divider"></div>
+
+      <div class="side-card__benefits">
+        <div class="side-card__benefit"><svg viewBox="0 0 24 24"><path d="M5 13l4 4 10-10"/></svg>수리비·정비비 0원</div>
+        <div class="side-card__benefit"><svg viewBox="0 0 24 24"><path d="M5 13l4 4 10-10"/></svg>자동차세 대납</div>
+        <div class="side-card__benefit"><svg viewBox="0 0 24 24"><path d="M5 13l4 4 10-10"/></svg>일반 번호판</div>
+        <div class="side-card__benefit"><svg viewBox="0 0 24 24"><path d="M5 13l4 4 10-10"/></svg>24시간 사고지원</div>
+      </div>
+
+      <a href="https://pf.kakao.com/_xxxxx/chat" target="_blank" class="btn-kakao-cta">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3C6.48 3 2 6.58 2 11c0 2.79 1.84 5.23 4.6 6.66-.2.71-.7 2.51-.8 2.9-.13.5.18.49.38.36.16-.1 2.5-1.7 3.51-2.39.76.11 1.53.18 2.31.18 5.52 0 10-3.58 10-8s-4.48-8-10-8z"/></svg>
+        카카오톡으로 1:1 문의
+      </a>
+
+      <button class="btn-fav" id="sideFav">
+        <svg viewBox="0 0 24 24"><path d="M12 21s-7-4.5-9.5-9C0.5 8 3 4 6.5 4c2 0 3.5 1 5.5 3 2-2 3.5-3 5.5-3 3.5 0 6 4 4 8-2.5 4.5-9.5 9-9.5 9z"/></svg>
+        찜하기
+      </button>
+
+      <div class="side-card__hours">
+        <strong>1:1 상담 운영시간</strong>
+        평일 10:00 — 18:00 (점심 13:00 — 14:00)<br/>
+        주말 · 공휴일은 카카오톡으로만 가능
+      </div>
+    </div>
+  </aside>
+
+</div>
+
+<!-- MOBILE BOTTOM CTA -->
+<div class="mobile-cta">
+  <div class="mobile-cta__price">
+    <div class="mobile-cta__price-label">월 구독료</div>
+    <div class="mobile-cta__price-value">239만원~</div>
+  </div>
+  <a href="https://pf.kakao.com/_xxxxx/chat" target="_blank" class="btn-kakao-cta">
+    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3C6.48 3 2 6.58 2 11c0 2.79 1.84 5.23 4.6 6.66-.2.71-.7 2.51-.8 2.9-.13.5.18.49.38.36.16-.1 2.5-1.7 3.51-2.39.76.11 1.53.18 2.31.18 5.52 0 10-3.58 10-8s-4.48-8-10-8z"/></svg>
+    1:1 문의
+  </a>
+  <button class="btn-fav-icon" id="mobileFav">
+    <svg viewBox="0 0 24 24"><path d="M12 21s-7-4.5-9.5-9C0.5 8 3 4 6.5 4c2 0 3.5 1 5.5 3 2-2 3.5-3 5.5-3 3.5 0 6 4 4 8-2.5 4.5-9.5 9-9.5 9z"/></svg>
+  </button>
+</div>
+
+<!-- FLOATING KAKAO (PC only - mobile uses bottom CTA) -->
+<a href="https://pf.kakao.com/_xxxxx/chat" target="_blank" class="kakao-fab">
+  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3C6.48 3 2 6.58 2 11c0 2.79 1.84 5.23 4.6 6.66-.2.71-.7 2.51-.8 2.9-.13.5.18.49.38.36.16-.1 2.5-1.7 3.51-2.39.76.11 1.53.18 2.31.18 5.52 0 10-3.58 10-8s-4.48-8-10-8z"/></svg>
+  1:1 문의
+</a>
+
+<footer class="footer">
+  <div class="footer__inner">
+    <div class="footer__row">
+      <a href="/terms/service">이용약관</a>
+      <a href="/terms/privacy">개인정보처리방침</a>
+      <a href="/faq">고객센터</a>
+    </div>
+    <p class="footer__biz">(주)○○○ &nbsp;|&nbsp; 사업자등록번호: 000-00-00000<br/>통신판매업신고번호: 0000-서울○○-00000 &nbsp;|&nbsp; © 2026 ○○○ Inc.</p>
+  </div>
+</footer>
+
+<script>
+// FAQ accordion
+document.querySelectorAll('.faq-q').forEach(q => {
+  q.addEventListener('click', () => {
+    const item = q.parentElement;
+    const a = item.querySelector('.faq-a');
+    const isOpen = item.classList.toggle('is-open');
+    a.style.maxHeight = isOpen ? a.scrollHeight + 'px' : '0';
+  });
+});
+document.querySelectorAll('.faq-item.is-open .faq-a').forEach(a => a.style.maxHeight = a.scrollHeight + 'px');
+
+// Gallery thumb
+const mainImg = document.getElementById('mainImg');
+document.querySelectorAll('.gallery__thumb').forEach((t, i) => {
+  t.addEventListener('click', () => {
+    document.querySelectorAll('.gallery__thumb').forEach(x => x.classList.remove('is-active'));
+    t.classList.add('is-active');
+    const src = t.querySelector('img').src.replace('w=200', 'w=1600');
+    mainImg.src = src;
+    document.querySelector('.gallery__counter').textContent = String(i+1).padStart(2,'0') + ' / 12';
+  });
+});
+
+// Favorite toggle
+['sideFav', 'mobileFav'].forEach(id => {
+  const b = document.getElementById(id);
+  if (b) b.addEventListener('click', () => b.classList.toggle('is-active'));
+});
+
+// Anchor tab active state
+const tabs = document.querySelectorAll('.anchor-tab');
+const ids = ['benefits','compare','process','faq'];
+window.addEventListener('scroll', () => {
+  const y = window.scrollY + 200;
+  let cur = 0;
+  ids.forEach((id, i) => {
+    const el = document.getElementById(id);
+    if (el && el.offsetTop <= y) cur = i;
+  });
+  tabs.forEach((t, i) => t.classList.toggle('is-active', i === cur));
+}, { passive: true });
+
+// Smooth scroll on tab click
+tabs.forEach((t, i) => t.addEventListener('click', (e) => {
+  e.preventDefault();
+  const el = document.getElementById(ids[i]);
+  if (el) window.scrollTo({ top: el.offsetTop - 140, behavior: 'smooth' });
+}));
+</script>
+
+</body>
+</html>

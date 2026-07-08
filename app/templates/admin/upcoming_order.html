@@ -1,0 +1,72 @@
+{% extends 'admin/admin_base.html' %}
+{% block crumb %}업커밍 / 순서 관리{% endblock %}
+{% block page_title %}업커밍 순서 관리{% endblock %}
+{% block actions %}
+  <span class="autosave-pill"><span class="dot"></span> 자동 저장</span>
+{% endblock %}
+
+{% block content %}
+<p style="color:var(--ink-2);margin-bottom:16px;font-size:14px;">
+  카드를 끌어다 놓으면 즉시 저장됩니다. 그룹 간 이동도 가능합니다.
+</p>
+
+<div class="up-columns">
+  {% for group_key, items, label in [('a', group_a, '그룹 A — 1달 내 출고'), ('b', group_b, '그룹 B — 그 밖에 준비 중')] %}
+  <div class="up-column">
+    <header>
+      <h2>{{ label }} <span style="color:var(--muted);font-weight:500;">({{ items|length }})</span></h2>
+      <button class="btn btn-outline" data-open-add data-group="{{ group_key }}" style="padding:6px 12px;font-size:13px;">+ 차량 추가</button>
+    </header>
+    <div class="up-list" id="up-list-{{ group_key }}">
+      {% for v in items %}
+      <div class="up-row" data-vehicle-id="{{ v.id }}">
+        <span class="handle">≡</span>
+        {% if v.primary_image %}
+          <img class="thumb" src="{{ v.primary_image.file_path }}" alt="" />
+        {% else %}
+          <div class="thumb"></div>
+        {% endif %}
+        <div class="info">
+          <div class="brand">{{ v.brand_name }}</div>
+          <div class="name">{{ v.model }}</div>
+          {% if v.eta_label %}<div style="margin-top:2px;"><span class="eta-badge">{{ v.eta_label }}</span></div>{% endif %}
+        </div>
+        <span class="position">{{ loop.index }}</span>
+        <button type="button" class="remove" data-remove-vehicle aria-label="제외">×</button>
+      </div>
+      {% else %}
+      <div style="color:var(--muted);font-size:13px;padding:16px 0;text-align:center;">차량을 추가해주세요</div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+<div class="modal-backdrop" data-add-modal>
+  <div class="modal">
+    <h3>차량 추가</h3>
+    <input class="search" type="text" placeholder="모델명·브랜드 검색" data-add-search />
+    <div class="candidate-list">
+      {% for v in unassigned %}
+      <div class="candidate" data-name="{{ v.brand_name }} {{ v.model }}">
+        {% if v.primary_image %}<img src="{{ v.primary_image.file_path }}" alt="" />{% else %}<div style="width:48px;height:36px;background:var(--surface-2);border-radius:6px;"></div>{% endif %}
+        <div class="info">
+          <div style="font-size:11px;color:var(--muted);">{{ v.brand_name }}</div>
+          <div style="font-size:14px;font-weight:600;">{{ v.model }}</div>
+        </div>
+        <button type="button" data-add-candidate data-vehicle-id="{{ v.id }}">추가</button>
+      </div>
+      {% else %}
+      <div style="color:var(--muted);font-size:13px;text-align:center;padding:16px;">배정 가능한 차량이 없습니다.</div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<div class="toast" data-toast></div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+<script src="{{ url_for('static', filename='js/upcoming-order.js') }}"></script>
+{% endblock %}

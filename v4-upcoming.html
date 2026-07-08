@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+<title>업커밍 · 곧 출고될 차량</title>
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet">
+<style>
+:root {
+  --bg: #FFFFFF; --surface: #F4F6F9; --surface-2: #EDF0F5;
+  --ink: #111111; --ink-2: #4B5563; --muted: #8B92A0;
+  --line: #E5E7EB; --line-2: #EEF1F5;
+  --primary: #3B6EF5; --primary-soft: #E8F0FF; --primary-deep: #2952CC;
+  --warn: #FF6A3D; --purple: #6E59E0; --purple-soft: #F0EEFF;
+  --kakao: #FEE500; --kakao-ink: #3A1D1D;
+  --radius-card: 20px; --radius-sm: 12px; --radius-pill: 999px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { background: var(--bg); color: var(--ink); font-family: 'Pretendard', sans-serif; -webkit-font-smoothing: antialiased; font-feature-settings: "ss01","tnum"; }
+a { color: inherit; text-decoration: none; }
+button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; padding: 0; }
+img { display: block; max-width: 100%; }
+
+/* HEADER (shared) */
+.header { position: sticky; top: 0; z-index: 50; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); border-bottom: 1px solid transparent; transition: border-color 180ms; }
+.header.is-scrolled { border-bottom-color: var(--line); }
+.header__inner { max-width: 1280px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; padding: 14px 20px; height: 60px; }
+@media (min-width: 1024px) { .header__inner { padding: 16px 32px; height: 72px; } }
+.logo { font-size: 22px; font-weight: 800; letter-spacing: -0.04em; color: var(--primary); }
+.logo em { font-style: normal; color: var(--ink); }
+@media (min-width: 1024px) { .logo { font-size: 26px; } }
+.nav-pc { display: none; gap: 32px; font-size: 15px; font-weight: 500; }
+@media (min-width: 1024px) { .nav-pc { display: flex; } }
+.nav-pc a { color: var(--ink-2); }
+.nav-pc a.is-active { color: var(--ink); font-weight: 600; }
+.header__right { display: flex; align-items: center; gap: 14px; }
+.header__lang { display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; border: 1px solid var(--line); border-radius: var(--radius-pill); font-size: 13px; font-weight: 500; color: var(--ink-2); }
+.header__lang svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 1.6; }
+.header__my { font-size: 14px; font-weight: 600; color: var(--ink); }
+
+/* CONTAINER */
+.container { max-width: 1280px; margin: 0 auto; padding: 16px 16px 120px; }
+@media (min-width: 768px) { .container { padding: 20px 24px 120px; } }
+@media (min-width: 1024px) { .container { padding: 32px 32px 160px; } }
+
+/* PAGE HERO */
+.page-hero { background: linear-gradient(135deg, var(--purple-soft) 0%, var(--primary-soft) 100%); border-radius: var(--radius-card); padding: 28px 24px; position: relative; overflow: hidden; }
+@media (min-width: 768px) { .page-hero { padding: 44px 40px; border-radius: 24px; } }
+@media (min-width: 1024px) { .page-hero { padding: 56px 56px; } }
+
+.page-hero__label { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; background: white; border-radius: var(--radius-pill); font-size: 12px; font-weight: 600; color: var(--purple); margin-bottom: 14px; }
+.page-hero__label::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--purple); animation: pulse 2s infinite; }
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+.page-hero__title { font-size: 26px; font-weight: 800; letter-spacing: -0.025em; line-height: 1.2; margin-bottom: 10px; }
+@media (min-width: 768px) { .page-hero__title { font-size: 36px; } }
+@media (min-width: 1024px) { .page-hero__title { font-size: 44px; } }
+.page-hero__title em { font-style: normal; color: var(--purple); }
+.page-hero__sub { font-size: 14px; color: var(--ink-2); line-height: 1.55; max-width: 48ch; }
+@media (min-width: 1024px) { .page-hero__sub { font-size: 16px; } }
+
+.page-hero__stats { display: flex; gap: 14px; margin-top: 20px; flex-wrap: wrap; }
+.page-hero__stat { background: white; border-radius: var(--radius-sm); padding: 12px 18px; }
+.page-hero__stat-label { font-size: 11px; color: var(--muted); font-weight: 500; margin-bottom: 2px; }
+.page-hero__stat-value { font-size: 20px; font-weight: 800; letter-spacing: -0.02em; color: var(--ink); }
+.page-hero__stat-value em { font-style: normal; color: var(--purple); }
+
+/* GROUP */
+.group { margin-top: 40px; }
+@media (min-width: 1024px) { .group { margin-top: 64px; } }
+
+.group__head { display: flex; align-items: end; justify-content: space-between; margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid var(--line); flex-wrap: wrap; gap: 16px; }
+.group__title-wrap { display: flex; align-items: center; gap: 12px; }
+.group__tag { display: inline-flex; align-items: center; font-size: 11px; font-weight: 700; padding: 5px 10px; border-radius: 6px; letter-spacing: 0.02em; }
+.group__tag.a { background: var(--primary); color: white; }
+.group__tag.b { background: var(--surface-2); color: var(--ink-2); }
+.group__title { font-size: 22px; font-weight: 800; letter-spacing: -0.025em; }
+@media (min-width: 1024px) { .group__title { font-size: 28px; } }
+.group__sub { font-size: 13px; color: var(--muted); margin-top: 4px; }
+@media (min-width: 1024px) { .group__sub { font-size: 14px; } }
+.group__count { font-size: 13px; color: var(--ink-2); font-weight: 600; }
+.group__count strong { color: var(--ink); }
+
+/* UPCOMING GRID (similar to vehicle cards but with ETA badge) */
+.up-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
+@media (min-width: 640px) { .up-grid { grid-template-columns: 1fr 1fr; gap: 16px; } }
+@media (min-width: 1024px) { .up-grid { grid-template-columns: repeat(3, 1fr); gap: 20px; } }
+
+.up-card { background: var(--surface); border-radius: var(--radius-card); padding: 22px 22px 0; display: flex; flex-direction: column; cursor: pointer; transition: background 180ms, transform 180ms; overflow: hidden; min-height: 280px; position: relative; }
+.up-card:hover { background: var(--surface-2); }
+.up-card:active { transform: scale(0.995); }
+@media (min-width: 1024px) { .up-card { padding: 26px 26px 0; min-height: 320px; } }
+
+.up-card__eta { display: inline-flex; align-items: center; gap: 5px; padding: 5px 10px; background: white; border-radius: var(--radius-pill); font-size: 11px; font-weight: 700; color: var(--primary); margin-bottom: 12px; align-self: flex-start; }
+.up-card__eta::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: var(--primary); }
+.up-card__eta.is-far { color: var(--ink-2); }
+.up-card__eta.is-far::before { background: var(--muted); }
+
+.up-card__top { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; margin-bottom: 4px; }
+.up-card__title-wrap { flex: 1; min-width: 0; }
+.up-card__brand { font-size: 11px; color: var(--muted); font-weight: 500; margin-bottom: 4px; }
+.up-card__name { font-size: 17px; font-weight: 700; letter-spacing: -0.015em; color: var(--ink); }
+@media (min-width: 1024px) { .up-card__name { font-size: 19px; } }
+.up-card__arrow { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--muted); flex-shrink: 0; margin-top: 2px; transition: background 160ms, color 160ms; }
+.up-card:hover .up-card__arrow { background: white; color: var(--ink); }
+.up-card__arrow svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2; }
+
+.up-card__meta { font-size: 12px; color: var(--ink-2); font-weight: 500; display: inline-flex; gap: 10px; letter-spacing: -0.005em; margin-top: 4px; }
+@media (min-width: 1024px) { .up-card__meta { font-size: 13px; } }
+.up-card__meta span:not(:last-child)::after { content: '|'; margin-left: 10px; color: var(--line); }
+
+.up-card__image { margin: 18px -8px -8px; flex: 1; display: flex; align-items: flex-end; justify-content: center; min-height: 130px; padding-bottom: 8px; }
+@media (min-width: 1024px) { .up-card__image { min-height: 160px; margin: 18px -12px -12px; } }
+.up-card__image img { max-width: 100%; max-height: 180px; object-fit: contain; filter: drop-shadow(0 16px 22px rgba(0,0,0,0.12)); transition: transform 400ms; }
+.up-card:hover .up-card__image img { transform: scale(1.04) translateY(-2px); }
+
+/* DIVIDER (visual separator between groups) */
+.group-divider { display: flex; align-items: center; gap: 16px; margin: 56px 0 0; }
+@media (min-width: 1024px) { .group-divider { margin-top: 80px; } }
+.group-divider__line { flex: 1; height: 1px; background: var(--line); }
+.group-divider__text { font-size: 13px; color: var(--muted); font-weight: 500; }
+
+/* CALL TO ACTION */
+.cta-banner { margin-top: 48px; background: var(--ink); color: white; border-radius: var(--radius-card); padding: 32px 24px; display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
+@media (min-width: 1024px) { .cta-banner { padding: 48px 56px; margin-top: 80px; } }
+.cta-banner__text { flex: 1; min-width: 240px; }
+.cta-banner__title { font-size: 22px; font-weight: 800; letter-spacing: -0.025em; line-height: 1.3; margin-bottom: 8px; }
+@media (min-width: 1024px) { .cta-banner__title { font-size: 28px; } }
+.cta-banner__sub { font-size: 14px; color: rgba(255,255,255,0.7); line-height: 1.55; }
+.cta-banner__btn { display: inline-flex; align-items: center; gap: 8px; background: var(--kakao); color: var(--kakao-ink); padding: 14px 24px; border-radius: var(--radius-pill); font-size: 15px; font-weight: 700; }
+.cta-banner__btn svg { width: 18px; height: 18px; }
+
+/* FOOTER */
+.footer { margin-top: 80px; padding: 32px 16px 28px; background: var(--surface); font-size: 12px; color: var(--ink-2); line-height: 1.7; }
+.footer__inner { max-width: 1280px; margin: 0 auto; }
+.footer__row { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 16px; font-weight: 500; }
+.footer__row a { color: var(--ink); }
+.footer__biz { font-size: 11px; color: var(--muted); }
+
+/* KAKAO FAB */
+.kakao-fab { position: fixed; z-index: 80; bottom: 16px; right: 16px; display: inline-flex; align-items: center; gap: 8px; background: var(--kakao); color: var(--kakao-ink); padding: 12px 18px; border-radius: var(--radius-pill); font-size: 14px; font-weight: 700; box-shadow: 0 6px 18px rgba(0,0,0,0.12); }
+.kakao-fab svg { width: 18px; height: 18px; }
+@media (min-width: 1024px) { .kakao-fab { bottom: 32px; right: 32px; padding: 14px 22px; font-size: 15px; } .kakao-fab svg { width: 20px; height: 20px; } }
+</style>
+</head>
+<body>
+
+<header class="header" id="header">
+  <div class="header__inner">
+    <a href="/" class="logo">GA<em>:RAGE</em></a>
+    <nav class="nav-pc">
+      <a href="/">홈</a>
+      <a href="/?type=sub">구독</a>
+      <a href="/?type=rent">렌트</a>
+      <a href="/?type=super">슈퍼카</a>
+      <a href="/upcoming" class="is-active">업커밍</a>
+      <a href="/faq">고객센터</a>
+    </nav>
+    <div class="header__right">
+      <button class="header__lang"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18 M12 3a14 14 0 010 18 M12 3a14 14 0 000 18"/></svg>ENG</button>
+      <a href="/mypage" class="header__my">MY</a>
+    </div>
+  </div>
+</header>
+
+<main class="container">
+
+  <!-- PAGE HERO -->
+  <section class="page-hero">
+    <span class="page-hero__label">UPCOMING</span>
+    <h1 class="page-hero__title">곧 만나볼 <em>차량들</em></h1>
+    <p class="page-hero__sub">아직 컬렉션에는 공개되지 않았지만, 머지않아 만날 수 있는 차량들입니다.<br/>관심 차량은 미리 카카오톡으로 출고 알림을 받아보세요.</p>
+    <div class="page-hero__stats">
+      <div class="page-hero__stat">
+        <div class="page-hero__stat-label">1달 내 출고</div>
+        <div class="page-hero__stat-value"><em>6</em>대</div>
+      </div>
+      <div class="page-hero__stat">
+        <div class="page-hero__stat-label">준비 중</div>
+        <div class="page-hero__stat-value">3대</div>
+      </div>
+      <div class="page-hero__stat">
+        <div class="page-hero__stat-label">다음 호 공개</div>
+        <div class="page-hero__stat-value">12월 1일</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- GROUP A: 1달 내 출고 가능 -->
+  <section class="group">
+    <header class="group__head">
+      <div class="group__title-wrap">
+        <span class="group__tag a">A</span>
+        <div>
+          <h2 class="group__title">1달 내 구독 가능</h2>
+          <p class="group__sub">다른 분이 구독 중이지만 곧 종료되는 차량입니다.</p>
+        </div>
+      </div>
+      <span class="group__count"><strong>6</strong>대 · 어드민 정렬 순</span>
+    </header>
+
+    <div class="up-grid">
+      <!-- 어드민이 정렬한 position ASC 순서 -->
+      
+      <a href="/vehicles/7" class="up-card">
+        <span class="up-card__eta">12월 첫째 주 출고</span>
+        <div class="up-card__top">
+          <div class="up-card__title-wrap">
+            <div class="up-card__brand">Porsche</div>
+            <h3 class="up-card__name">Cayenne Turbo</h3>
+          </div>
+          <div class="up-card__arrow"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div>
+        </div>
+        <div class="up-card__meta"><span>2021</span><span>그레이</span><span>가솔린</span></div>
+        <div class="up-card__image"><img src="https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=800&q=85" alt="" /></div>
+      </a>
+
+      <a href="/vehicles/8" class="up-card">
+        <span class="up-card__eta">12월 둘째 주 출고</span>
+        <div class="up-card__top">
+          <div class="up-card__title-wrap">
+            <div class="up-card__brand">BMW</div>
+            <h3 class="up-card__name">M3 Competition</h3>
+          </div>
+          <div class="up-card__arrow"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div>
+        </div>
+        <div class="up-card__meta"><span>2022</span><span>화이트</span><span>가솔린</span></div>
+        <div class="up-card__image"><img src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=800&q=85" alt="" /></div>
+      </a>
+
+      <a href="/vehicles/9" class="up-card">
+        <span class="up-card__eta">12월 셋째 주 출고</span>
+        <div class="up-card__top">
+          <div class="up-card__title-wrap">
+            <div class="up-card__brand">Genesis</div>
+            <h3 class="up-card__name">G80 Sport</h3>
+          </div>
+          <div class="up-card__arrow"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div>
+        </div>
+        <div class="up-card__meta"><span>2023</span><span>매트블랙</span><span>가솔린</span></div>
+        <div class="up-card__image"><img src="https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?w=800&q=85" alt="" /></div>
+      </a>
+
+      <a href="/vehicles/10" class="up-card">
+        <span class="up-card__eta">12월 넷째 주 출고</span>
+        <div class="up-card__top">
+          <div class="up-card__title-wrap">
+            <div class="up-card__brand">Audi</div>
+            <h3 class="up-card__name">Q8 50 TDI</h3>
+          </div>
+          <div class="up-card__arrow"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div>
+        </div>
+        <div class="up-card__meta"><span>2023</span><span>블루</span><span>디젤</span></div>
+        <div class="up-card__image"><img src="https://images.unsplash.com/photo-1617814076367-b759c7d7e738?w=800&q=85" alt="" /></div>
+      </a>
+
+      <a href="/vehicles/11" class="up-card">
+        <span class="up-card__eta">1월 첫째 주 출고</span>
+        <div class="up-card__top">
+          <div class="up-card__title-wrap">
+            <div class="up-card__brand">Mercedes-Benz</div>
+            <h3 class="up-card__name">GLE 450 4MATIC</h3>
+          </div>
+          <div class="up-card__arrow"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div>
+        </div>
+        <div class="up-card__meta"><span>2024</span><span>실버</span><span>가솔린</span></div>
+        <div class="up-card__image"><img src="https://images.unsplash.com/photo-1542362567-b07e54358753?w=800&q=85" alt="" /></div>
+      </a>
+
+      <a href="/vehicles/12" class="up-card">
+        <span class="up-card__eta">1월 둘째 주 출고</span>
+        <div class="up-card__top">
+          <div class="up-card__title-wrap">
+            <div class="up-card__brand">Land Rover</div>
+            <h3 class="up-card__name">Defender 110 X</h3>
+          </div>
+          <div class="up-card__arrow"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div>
+        </div>
+        <div class="up-card__meta"><span>2023</span><span>그린</span><span>디젤</span></div>
+        <div class="up-card__image"><img src="https://images.unsplash.com/photo-1555215695-3004980ad54e?w=800&q=85" alt="" /></div>
+      </a>
+
+    </div>
+  </section>
+
+  <!-- DIVIDER -->
+  <div class="group-divider">
+    <div class="group-divider__line"></div>
+    <span class="group-divider__text">아직 컬렉션에 없는 차량</span>
+    <div class="group-divider__line"></div>
+  </div>
+
+  <!-- GROUP B: 그 밖에 -->
+  <section class="group" style="margin-top: 32px;">
+    <header class="group__head">
+      <div class="group__title-wrap">
+        <span class="group__tag b">B</span>
+        <div>
+          <h2 class="group__title">그 밖에 준비 중</h2>
+          <p class="group__sub">당장 신청은 어렵지만 추후 기회가 올 차량입니다.</p>
+        </div>
+      </div>
+      <span class="group__count"><strong>3</strong>대 · 어드민 정렬 순</span>
+    </header>
+
+    <div class="up-grid">
+
+      <a href="/vehicles/13" class="up-card">
+        <span class="up-card__eta is-far">2월 이후 출고 예정</span>
+        <div class="up-card__top">
+          <div class="up-card__title-wrap">
+            <div class="up-card__brand">Bentley</div>
+            <h3 class="up-card__name">Continental GT</h3>
+          </div>
+          <div class="up-card__arrow"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div>
+        </div>
+        <div class="up-card__meta"><span>2022</span><span>블랙</span><span>가솔린</span></div>
+        <div class="up-card__image"><img src="https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=800&q=85" alt="" /></div>
+      </a>
+
+      <a href="/vehicles/14" class="up-card">
+        <span class="up-card__eta is-far">2월 이후 출고 예정</span>
+        <div class="up-card__top">
+          <div class="up-card__title-wrap">
+            <div class="up-card__brand">Porsche</div>
+            <h3 class="up-card__name">Macan GTS</h3>
+          </div>
+          <div class="up-card__arrow"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div>
+        </div>
+        <div class="up-card__meta"><span>2023</span><span>레드</span><span>가솔린</span></div>
+        <div class="up-card__image"><img src="https://images.unsplash.com/photo-1617814076367-b759c7d7e738?w=800&q=85" alt="" /></div>
+      </a>
+
+      <a href="/vehicles/15" class="up-card">
+        <span class="up-card__eta is-far">3월 이후 출고 예정</span>
+        <div class="up-card__top">
+          <div class="up-card__title-wrap">
+            <div class="up-card__brand">Maserati</div>
+            <h3 class="up-card__name">Levante Modena</h3>
+          </div>
+          <div class="up-card__arrow"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div>
+        </div>
+        <div class="up-card__meta"><span>2023</span><span>화이트</span><span>가솔린</span></div>
+        <div class="up-card__image"><img src="https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?w=800&q=85" alt="" /></div>
+      </a>
+
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta-banner">
+    <div class="cta-banner__text">
+      <h2 class="cta-banner__title">원하는 차량의 출고 알림,<br/>가장 먼저 받아보세요.</h2>
+      <p class="cta-banner__sub">관심 차량을 카카오톡으로 미리 알려주세요. 출고 즉시 1:1로 안내드립니다.</p>
+    </div>
+    <a href="https://pf.kakao.com/_xxxxx/chat" target="_blank" class="cta-banner__btn">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3C6.48 3 2 6.58 2 11c0 2.79 1.84 5.23 4.6 6.66-.2.71-.7 2.51-.8 2.9-.13.5.18.49.38.36.16-.1 2.5-1.7 3.51-2.39.76.11 1.53.18 2.31.18 5.52 0 10-3.58 10-8s-4.48-8-10-8z"/></svg>
+      출고 알림 신청하기
+    </a>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <div class="footer__inner">
+    <div class="footer__row">
+      <a href="/terms/service">이용약관</a>
+      <a href="/terms/privacy">개인정보처리방침</a>
+      <a href="/faq">고객센터</a>
+    </div>
+    <p class="footer__biz">(주)○○○ &nbsp;|&nbsp; 사업자등록번호: 000-00-00000<br/>통신판매업신고번호: 0000-서울○○-00000 &nbsp;|&nbsp; © 2026 ○○○ Inc.</p>
+  </div>
+</footer>
+
+<a href="https://pf.kakao.com/_xxxxx/chat" target="_blank" class="kakao-fab">
+  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3C6.48 3 2 6.58 2 11c0 2.79 1.84 5.23 4.6 6.66-.2.71-.7 2.51-.8 2.9-.13.5.18.49.38.36.16-.1 2.5-1.7 3.51-2.39.76.11 1.53.18 2.31.18 5.52 0 10-3.58 10-8s-4.48-8-10-8z"/></svg>
+  1:1 문의
+</a>
+
+<script>
+const header = document.getElementById('header');
+window.addEventListener('scroll', () => {
+  header.classList.toggle('is-scrolled', window.scrollY > 8);
+}, { passive: true });
+</script>
+
+</body>
+</html>

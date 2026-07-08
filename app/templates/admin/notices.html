@@ -1,0 +1,29 @@
+{% extends 'admin/admin_base.html' %}
+{% block crumb %}공지사항{% endblock %}
+{% block page_title %}공지사항{% endblock %}
+{% block actions %}<a class="btn btn-primary" href="{{ url_for('admin.notices_new') }}">+ 새 공지</a>{% endblock %}
+{% block content %}
+<table class="data-table">
+  <thead><tr><th>ID</th><th>제목</th><th>고정</th><th>공개</th><th>등록일</th><th></th></tr></thead>
+  <tbody>
+    {% for n in notices %}
+    <tr>
+      <td>#{{ n.id }}</td>
+      <td>{{ n.title }}</td>
+      <td>{{ '⭐' if n.is_pinned else '' }}</td>
+      <td>{{ '예' if n.is_visible else '숨김' }}</td>
+      <td>{{ n.created_at | date_kr }}</td>
+      <td class="actions">
+        <a href="{{ url_for('admin.notices_edit', notice_id=n.id) }}">수정</a>
+        <form method="post" action="{{ url_for('admin.notices_delete', notice_id=n.id) }}" onsubmit="return confirm('삭제할까요?');" style="display:inline;">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+          <button type="submit" style="background:none;border:none;color:var(--warn);cursor:pointer;">삭제</button>
+        </form>
+      </td>
+    </tr>
+    {% else %}
+    <tr><td colspan="6" style="color:var(--muted);text-align:center;padding:24px;">등록된 공지가 없습니다.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

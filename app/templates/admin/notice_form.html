@@ -1,0 +1,27 @@
+{% extends 'admin/admin_base.html' %}
+{% block crumb %}공지사항 / {% if notice %}수정{% else %}새 공지{% endif %}{% endblock %}
+{% block page_title %}{% if notice %}공지 수정{% else %}새 공지{% endif %}{% endblock %}
+{% block content %}
+<form method="post">
+  {{ form.csrf_token }}
+  <fieldset class="form-set">
+    <div class="form-grid">
+      <div class="form-field full"><label>제목 *</label>{{ form.title() }}</div>
+      <div class="form-field full"><label>본문 (Markdown 지원)</label>{{ form.body(rows=12) }}</div>
+      <div class="form-field">
+        <label class="form-check">{{ form.is_pinned() }} 상단 고정</label>
+      </div>
+      <div class="form-field">
+        <label class="form-check">{{ form.is_visible() }} 공개 (체크하면 사이트에 노출)</label>
+      </div>
+    </div>
+  </fieldset>
+  <div class="form-actions">
+    <div></div>
+    <div style="display:flex;gap:8px;">
+      <a class="btn btn-outline" href="{{ url_for('admin.notices') }}">취소</a>
+      <button class="btn btn-primary" type="submit">저장</button>
+    </div>
+  </div>
+</form>
+{% endblock %}

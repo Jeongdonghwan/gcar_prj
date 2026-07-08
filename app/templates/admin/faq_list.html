@@ -1,0 +1,28 @@
+{% extends 'admin/admin_base.html' %}
+{% block crumb %}FAQ{% endblock %}
+{% block page_title %}FAQ{% endblock %}
+{% block actions %}<a class="btn btn-primary" href="{{ url_for('admin.faq_new') }}">+ 새 FAQ</a>{% endblock %}
+{% block content %}
+<table class="data-table">
+  <thead><tr><th>카테고리</th><th>질문</th><th>순서</th><th>공개</th><th></th></tr></thead>
+  <tbody>
+    {% for f in faqs %}
+    <tr>
+      <td>{{ f.category | faq_category_label }}</td>
+      <td>{{ f.question }}</td>
+      <td>{{ f.sort_order }}</td>
+      <td>{{ '예' if f.is_visible else '숨김' }}</td>
+      <td class="actions">
+        <a href="{{ url_for('admin.faq_edit', faq_id=f.id) }}">수정</a>
+        <form method="post" action="{{ url_for('admin.faq_delete', faq_id=f.id) }}" onsubmit="return confirm('삭제할까요?');" style="display:inline;">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+          <button type="submit" style="background:none;border:none;color:var(--warn);cursor:pointer;">삭제</button>
+        </form>
+      </td>
+    </tr>
+    {% else %}
+    <tr><td colspan="5" style="color:var(--muted);text-align:center;padding:24px;">FAQ가 없습니다.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

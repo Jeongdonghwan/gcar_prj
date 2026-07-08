@@ -1,0 +1,77 @@
+{% extends 'admin/admin_base.html' %}
+{% block crumb %}배너 관리{% endblock %}
+{% block page_title %}히어로 배너{% endblock %}
+{% block actions %}<a class="btn btn-primary" href="{{ url_for('admin.banners_new') }}">+ 새 배너</a>{% endblock %}
+{% block content %}
+<p style="color:var(--ink-2);font-size:14px;margin-bottom:16px;">
+  메인 페이지 상단의 히어로 배너입니다. <strong>3:1 가로형 이미지</strong>로 표시되며, 공개된 항목이 정렬 순서대로 5초마다 자동 롤링됩니다.
+</p>
+
+<table class="data-table banners-table">
+  <thead>
+    <tr>
+      <th style="width:60px;">순서</th>
+      <th>이미지 미리보기</th>
+      <th>연결 URL</th>
+      <th style="width:100px;">공개</th>
+      <th style="width:120px;text-align:right;">액션</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for b in banners %}
+    <tr>
+      <td><strong style="font-size:14px;">{{ b.sort_order }}</strong></td>
+      <td>
+        {% if b.image_path %}
+          <img src="{{ b.image_path }}" alt=""
+               style="width:240px;height:48px;object-fit:cover;border-radius:8px;background:var(--surface);border:1px solid var(--line);display:block;" />
+        {% else %}
+          <div style="width:240px;height:48px;background:var(--surface);border:1px dashed var(--line);border-radius:8px;display:grid;place-items:center;color:var(--muted);font-size:12px;">
+            이미지 없음
+          </div>
+        {% endif %}
+      </td>
+      <td style="color:var(--ink-2);font-size:13px;word-break:break-all;max-width:280px;">
+        {% if b.link_url %}
+          <span style="color:var(--primary-deep);">🔗 {{ b.link_url }}</span>
+        {% else %}
+          <span style="color:var(--muted);">—</span>
+        {% endif %}
+      </td>
+      <td>
+        {% if b.is_visible %}
+          <span class="admin-badge is-success">공개</span>
+        {% else %}
+          <span class="admin-badge is-muted">숨김</span>
+        {% endif %}
+      </td>
+      <td class="admin-row-actions">
+        <a class="admin-link-btn" href="{{ url_for('admin.banners_edit', banner_id=b.id) }}">수정</a>
+        <form method="post" action="{{ url_for('admin.banners_delete', banner_id=b.id) }}"
+              onsubmit="return confirm('이 배너를 삭제할까요?');" style="display:inline;">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+          <button type="submit" class="admin-link-btn is-danger">삭제</button>
+        </form>
+      </td>
+    </tr>
+    {% else %}
+    <tr>
+      <td colspan="5" style="color:var(--muted);text-align:center;padding:48px 24px;">
+        <div style="font-size:32px;margin-bottom:8px;">🖼</div>
+        <div style="font-size:14px;font-weight:600;color:var(--ink-2);margin-bottom:4px;">아직 등록된 배너가 없습니다</div>
+        <div style="font-size:12px;">우측 상단의 "+ 새 배너" 버튼으로 첫 배너를 만들어보세요.</div>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<div style="margin-top:20px;background:var(--surface);border-radius:12px;padding:16px 18px;">
+  <div style="font-size:13px;color:var(--ink);font-weight:700;margin-bottom:6px;">💡 안내</div>
+  <ul style="margin:0;padding-left:18px;color:var(--ink-2);font-size:12.5px;line-height:1.7;">
+    <li>권장 이미지 사이즈: <strong>1500 × 500px (3:1 가로형)</strong> · PNG · WebP · JPG</li>
+    <li>이미지 안에 문구·CTA를 미리 넣어 완성본으로 업로드하세요.</li>
+    <li>모바일에서는 화면 폭에 맞춰 5:1 비율 유지하며 자동 축소됩니다.</li>
+  </ul>
+</div>
+{% endblock %}

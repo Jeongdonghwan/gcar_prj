@@ -1,0 +1,108 @@
+{% extends 'admin/admin_base.html' %}
+{% block crumb %}차량 관리 / {% if vehicle %}수정{% else %}신규 등록{% endif %}{% endblock %}
+{% block page_title %}{% if vehicle %}{{ vehicle.brand_name }} {{ vehicle.model }} 수정{% else %}차량 등록{% endif %}{% endblock %}
+{% block actions %}
+  {% if vehicle %}<a class="btn btn-outline" href="{{ url_for('public.vehicle_detail', vehicle_id=vehicle.id) }}" target="_blank">미리보기 ↗</a>{% endif %}
+{% endblock %}
+
+{% block content %}
+<form method="post" novalidate>
+  {{ form.csrf_token }}
+
+  <fieldset class="form-set">
+    <legend>1. 기본 정보</legend>
+    <div class="form-grid">
+      <div class="form-field"><label>브랜드</label>{{ form.brand_id() }}</div>
+      <div class="form-field"><label>모델명 (트림 포함) *</label>{{ form.model() }}</div>
+      <div class="form-field"><label>연식 *</label>{{ form.year(type='number') }}</div>
+      <div class="form-field"><label>색상</label>{{ form.color() }}</div>
+      <div class="form-field"><label>주행거리 (km)</label>{{ form.mileage_km(type='number') }}</div>
+      <div class="form-field"><label>연료</label>{{ form.fuel() }}</div>
+      <div class="form-field"><label>변속</label>{{ form.transmission() }}</div>
+      <div class="form-field"><label>번호판 (내부용)</label>{{ form.plate() }}</div>
+    </div>
+  </fieldset>
+
+  <fieldset class="form-set">
+    <legend>2. 가격 · 노출 설정</legend>
+    <div class="form-grid">
+      <div class="form-field"><label>월 구독료 최저가 (만원)</label>{{ form.price_min_man(type='number') }}</div>
+      <div class="form-field"><label>월 구독료 최고가 (만원)</label>{{ form.price_max_man(type='number') }}</div>
+      <div class="form-field"><label>상품 유형</label>{{ form.product_type() }}</div>
+      <div class="form-field"><label>공개 상태</label>{{ form.visibility() }}</div>
+      <div class="form-field"><label>업커밍 배치</label>{{ form.upcoming_group() }}</div>
+      <div class="form-field"><label>예상 출고 라벨</label>{{ form.eta_label() }}</div>
+      <div class="form-field full">
+        <div class="toggle-row">
+          <label>{{ form.show_in_collection() }} 메인 컬렉션 노출</label>
+          <label>{{ form.is_fast() }} 빠른 출고 배지</label>
+          <label>{{ form.is_deal() }} 특가 차량</label>
+          <label>{{ form.is_featured() }} 에디터스 픽</label>
+        </div>
+      </div>
+    </div>
+  </fieldset>
+
+  {% if vehicle %}
+  <fieldset class="form-set">
+    <legend>3. 차량 이미지</legend>
+    <div id="image-dropzone" class="dropzone">
+      <strong>이미지를 끌어다 놓으세요</strong>
+      <p style="margin-top:6px;font-size:13px;">JPG · PNG · WebP, 최대 10MB. 클릭하여 선택할 수도 있습니다.</p>
+      <input id="image-file-input" type="file" accept="image/*" multiple hidden />
+    </div>
+    <div id="image-thumb-grid" class="thumb-grid" data-vehicle-id="{{ vehicle.id }}">
+      {% for img in vehicle.images %}
+      <div class="thumb-cell" data-image-id="{{ img.id }}">
+        <img src="{{ img.file_path }}" alt="" />
+        <span class="order">{{ loop.index }}</span>
+        {% if img.is_primary %}
+          <span class="primary-badge">대표</span>
+        {% else %}
+          <button type="button" class="set-primary" data-set-primary>대표 지정</button>
+        {% endif %}
+        <button type="button" class="remove" data-remove-img>×</button>
+      </div>
+      {% endfor %}
+    </div>
+  </fieldset>
+  {% else %}
+  <fieldset class="form-set">
+    <legend>3. 차량 이미지</legend>
+    <p style="color:var(--muted);">먼저 기본 정보를 저장한 뒤 이미지를 업로드할 수 있습니다.</p>
+  </fieldset>
+  {% endif %}
+
+  <fieldset class="form-set">
+    <legend>4. 설명</legend>
+    <div class="form-grid">
+      <div class="form-field full"><label>한 줄 헤드라인</label>{{ form.headline() }}</div>
+      <div class="form-field full"><label>상세 설명</label>{{ form.description() }}</div>
+    </div>
+  </fieldset>
+
+  <fieldset class="form-set">
+    <legend>5. 편의 옵션</legend>
+    <div class="form-grid" style="grid-template-columns:repeat(2,1fr);">
+      {% for sub in form.options %}
+        <label style="display:flex;align-items:center;gap:8px;">{{ sub }} {{ sub.label.text }}</label>
+      {% endfor %}
+    </div>
+  </fieldset>
+
+  <div class="form-actions">
+    <div style="color:var(--muted);font-size:13px;">필수 입력값은 *입니다.</div>
+    <div style="display:flex;gap:8px;">
+      <a class="btn btn-outline" href="{{ url_for('admin.vehicles') }}">취소</a>
+      <button class="btn btn-primary" type="submit">{% if vehicle %}저장하기{% else %}저장하고 이미지 업로드{% endif %}</button>
+    </div>
+  </div>
+</form>
+{% endblock %}
+
+{% block scripts %}
+{% if vehicle %}
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+<script src="{{ url_for('static', filename='js/vehicle-form.js') }}"></script>
+{% endif %}
+{% endblock %}

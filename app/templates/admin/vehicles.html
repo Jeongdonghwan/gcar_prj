@@ -1,0 +1,57 @@
+{% extends 'admin/admin_base.html' %}
+{% block crumb %}차량 관리{% endblock %}
+{% block page_title %}차량 목록{% endblock %}
+{% block actions %}
+  <a class="btn btn-primary" href="{{ url_for('admin.vehicles_new') }}">+ 차량 등록</a>
+{% endblock %}
+{% block content %}
+{% set VIS_LABEL = {'public':'공개', 'hidden':'숨김', 'soldout':'판매완료'} %}
+{% set PLACE_LABEL = {'collection':'메인 컬렉션', 'none':'미배치'} %}
+<table class="data-table">
+  <thead>
+    <tr>
+      <th style="width:60px;">ID</th>
+      <th>브랜드</th>
+      <th>모델</th>
+      <th style="width:80px;">유형</th>
+      <th>월 구독료</th>
+      <th style="width:100px;">공개 상태</th>
+      <th style="width:120px;">노출 위치</th>
+      <th style="width:120px;text-align:right;">액션</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for v in vehicles %}
+    <tr>
+      <td style="color:var(--muted);font-size:13px;">#{{ v.id }}</td>
+      <td><strong>{{ v.brand_name }}</strong></td>
+      <td>{{ v.model }}</td>
+      <td>{{ v.product_type | product_type_label }}</td>
+      <td style="font-weight:600;">{{ v.price_min_man | price_man(v.price_max_man) }}</td>
+      <td>
+        {% if v.visibility == 'public' %}
+          <span class="admin-badge is-success">공개</span>
+        {% elif v.visibility == 'hidden' %}
+          <span class="admin-badge is-muted">숨김</span>
+        {% else %}
+          <span class="admin-badge is-warn">판매완료</span>
+        {% endif %}
+      </td>
+      <td style="font-size:13px;color:var(--ink-2);">
+        {% if v.placement == 'collection' %}메인 컬렉션
+        {% else %}<span style="color:var(--muted);">미배치</span>{% endif %}
+      </td>
+      <td class="admin-row-actions">
+        <a class="admin-link-btn" href="{{ url_for('admin.vehicles_edit', vehicle_id=v.id) }}">수정</a>
+        <form method="post" action="{{ url_for('admin.vehicles_delete', vehicle_id=v.id) }}" onsubmit="return confirm('삭제하시겠습니까?');" style="display:inline;">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+          <button type="submit" class="admin-link-btn is-danger">삭제</button>
+        </form>
+      </td>
+    </tr>
+    {% else %}
+    <tr><td colspan="8" style="color:var(--muted);text-align:center;padding:24px;">등록된 차량이 없습니다.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

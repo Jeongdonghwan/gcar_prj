@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% from 'public/_vehicle_card.html' import vehicle_card %}
+{% block title %}마이페이지 — Great Car{% endblock %}
+
+{% block content %}
+<div class="container" style="padding:24px 0;">
+  <h1 style="font-size:26px;">마이페이지</h1>
+  <p style="color:var(--ink-2);margin-top:6px;">{{ current_user.name or current_user.email or '회원' }}님, 안녕하세요.</p>
+
+  <section style="margin-top:32px;">
+    <h2 class="section-title" style="margin-bottom:16px;">찜한 차량</h2>
+    {% if favorites %}
+    <div class="vehicle-grid">
+      {% for v in favorites %}{{ vehicle_card(v) }}{% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">아직 찜한 차량이 없습니다.</div>
+    {% endif %}
+  </section>
+
+  <section style="margin-top:48px;">
+    <h2 class="section-title" style="margin-bottom:16px;">회원정보</h2>
+    <div class="notice-card">
+      <div style="display:grid;gap:8px;font-size:14px;">
+        <div><span style="color:var(--muted);">이메일</span> · {{ current_user.email or '미설정' }}</div>
+        <div><span style="color:var(--muted);">이름</span> · {{ current_user.name or '미설정' }}</div>
+        <div><span style="color:var(--muted);">휴대전화</span> · {{ current_user.phone or '미설정' }}</div>
+        <div><span style="color:var(--muted);">카카오 연결</span> · {{ '예' if current_user.kakao_id else '아니오' }}</div>
+      </div>
+      <form method="post" action="{{ url_for('auth.logout') }}" style="margin-top:16px;">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+        <button class="btn btn-outline" type="submit">로그아웃</button>
+      </form>
+    </div>
+  </section>
+</div>
+{% endblock %}

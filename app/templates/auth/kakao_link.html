@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block title %}계정 연결 확인 — Great Car{% endblock %}
+{% block kakao_float %}{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width:480px;padding:48px 20px;">
+  <h1 style="font-size:24px;">기존 계정과 연결할까요?</h1>
+  <p style="color:var(--ink-2);margin-top:12px;line-height:1.6;">
+    같은 이메일(<strong>{{ user.email }}</strong>)로 가입된 일반 회원이 있습니다.<br/>
+    카카오 계정을 이 회원과 연결하시면 다음부터 카카오로 빠르게 로그인할 수 있어요.
+  </p>
+  <form method="post" style="margin-top:24px;display:flex;gap:8px;">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+    <button class="btn btn-primary" type="submit" name="action" value="link">기존 계정과 연결</button>
+    <button class="btn btn-outline" type="submit" name="action" value="cancel">취소</button>
+  </form>
+</div>
+{% endblock %}
