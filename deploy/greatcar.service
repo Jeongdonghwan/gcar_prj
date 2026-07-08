@@ -1,0 +1,41 @@
+[Unit]
+Description=Great Car — Flask App (Gunicorn)
+After=network.target mariadb.service
+Wants=mariadb.service
+
+[Service]
+Type=notify
+User=www-data
+Group=www-data
+WorkingDirectory=/var/www/greatcar
+Environment="PATH=/var/www/greatcar/.venv/bin"
+Environment="FLASK_APP=run.py"
+Environment="FLASK_ENV=production"
+ExecStart=/var/www/greatcar/.venv/bin/gunicorn \
+    --workers 3 \
+    --worker-class sync \
+    --timeout 60 \
+    --bind 127.0.0.1:8002 \
+    --access-logfile /var/log/greatcar/access.log \
+    --error-logfile /var/log/greatcar/error.log \
+    --capture-output \
+    wsgi:application
+
+ExecReload=/bin/kill -s HUP $MAINPID
+Restart=on-failure
+RestartSec=5s
+KillSignal=SIGTERM
+
+# Logs directory 자동 생성
+RuntimeDirectory=greatcar
+LogsDirectory=greatcar
+
+# Security hardening
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=true
+ReadWritePaths=/var/www/greatcar/app/static/uploads /var/www/greatcar/instance /var/log/greatcar
+
+[Install]
+WantedBy=multi-user.target
