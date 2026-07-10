@@ -268,7 +268,12 @@ body.no-floating .kakao-float { display: none; }
   display: block;
 }
 .v-card:hover { background: var(--surface-2); }
-.v-card.is-sold { filter: grayscale(1); opacity: 0.7; }
+/* SOLD 카드: 이미지만 회색 + 살짝 흐림. 배지·텍스트는 선명하게 유지 */
+.v-card.is-sold { opacity: 0.92; }
+.v-card.is-sold .image img { filter: grayscale(1); opacity: 0.75; }
+.v-card.is-sold .brand,
+.v-card.is-sold .model,
+.v-card.is-sold .meta { color: var(--muted); }
 .v-card .badges { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; min-height: 22px; }
 .v-card .badge {
   font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px;
@@ -279,7 +284,15 @@ body.no-floating .kakao-float { display: none; }
 .v-card .badge.is-sub { background: var(--ink); }
 .v-card .badge.is-rent { background: var(--ink-2); }
 .v-card .badge.is-super { background: #6B49E4; }
-.v-card .badge.is-sold { background: var(--muted); }
+.v-card .badge.is-sold {
+  background: #e02828;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  padding: 5px 12px;
+  box-shadow: 0 2px 6px rgba(224, 40, 40, 0.35);
+}
 .v-card .arrow {
   position: absolute; top: 14px; right: 16px; color: var(--muted); opacity: 0.6;
 }
