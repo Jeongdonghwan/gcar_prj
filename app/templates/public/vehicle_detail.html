@@ -6,10 +6,17 @@
 {% block content %}
 <div class="container">
 
+  {% if vehicle.is_sold %}
+  <div class="detail-sold-banner" role="status">
+    <span class="sold-tag">SOLD OUT</span>
+    <span>판매가 완료된 차량입니다. 카카오톡으로 유사 차량을 문의하시거나 다른 매물을 둘러보세요.</span>
+  </div>
+  {% endif %}
+
   <section class="detail-hero">
     <div>
       <div data-gallery>
-        <div class="gallery {% if not vehicle.images %}is-placeholder{% endif %}">
+        <div class="gallery {% if not vehicle.images %}is-placeholder{% endif %} {% if vehicle.is_sold %}is-sold{% endif %}">
           {% if vehicle.images %}
             <img src="{{ vehicle.primary_image.file_path }}" alt="{{ vehicle.model }}" />
           {% else %}
@@ -44,15 +51,18 @@
           {% elif vehicle.product_type == 'super' %}<span class="badge is-super" style="font-size:11px;padding:4px 10px;border-radius:999px;background:#6B49E4;color:#fff;margin-left:6px;">슈퍼카</span>{% endif %}
         </h1>
         {% if vehicle.headline %}<p style="color:var(--ink-2);">{{ vehicle.headline }}</p>{% endif %}
-        <div class="price-row">{{ vehicle.price_min_man | price_man(vehicle.price_max_man) }}</div>
+        <div class="price-row {% if vehicle.is_sold %}is-sold{% endif %}">{{ vehicle.price_min_man | price_man(vehicle.price_max_man) }}</div>
       </div>
 
-      <aside class="detail-side detail-side-pc" style="margin-top:24px;">
-        <div class="price">{{ vehicle.price_min_man | price_man(vehicle.price_max_man) }}</div>
+      <aside class="detail-side detail-side-pc {% if vehicle.is_sold %}is-sold{% endif %}" style="margin-top:24px;">
+        <div class="price {% if vehicle.is_sold %}is-sold{% endif %}">{{ vehicle.price_min_man | price_man(vehicle.price_max_man) }}</div>
         <div class="benefit-line">보험·정비 포함</div>
         <div class="benefit-line">자동 보증 연장</div>
         <div class="benefit-line">카카오 1:1로 빠른 시작</div>
-        {% if kakao_channel_url %}
+        {% if vehicle.is_sold %}
+        <button class="btn btn-outline btn-block" style="margin-top:16px;" disabled>판매 완료된 차량</button>
+        <a class="btn btn-primary btn-block" style="margin-top:8px;" href="{{ url_for('public.vehicles_list') }}">다른 차량 보기 →</a>
+        {% elif kakao_channel_url %}
         <a class="btn btn-kakao btn-block" style="margin-top:16px;" href="{{ kakao_channel_url }}" target="_blank"
            data-kakao-cta data-kakao-url="{{ kakao_channel_url }}" data-source="detail_cta" data-vehicle-id="{{ vehicle.id }}">
           카카오톡 1:1 문의
@@ -146,14 +156,16 @@
 
 </div>
 
-<div class="mobile-cta">
-  <div class="price">{{ vehicle.price_min_man | price_man(vehicle.price_max_man) }}</div>
+<div class="mobile-cta {% if vehicle.is_sold %}is-sold{% endif %}">
+  <div class="price {% if vehicle.is_sold %}is-sold{% endif %}">{{ vehicle.price_min_man | price_man(vehicle.price_max_man) }}</div>
   <button class="btn btn-outline btn-fav" data-fav-toggle data-vehicle-id="{{ vehicle.id }}" aria-pressed="false" aria-label="찜하기">
     <svg class="fav-heart" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
     </svg>
   </button>
-  {% if kakao_channel_url %}
+  {% if vehicle.is_sold %}
+  <a class="btn btn-primary" href="{{ url_for('public.vehicles_list') }}">다른 차량 보기</a>
+  {% elif kakao_channel_url %}
   <a class="btn btn-kakao" href="{{ kakao_channel_url }}" target="_blank"
      data-kakao-cta data-kakao-url="{{ kakao_channel_url }}" data-source="detail_cta" data-vehicle-id="{{ vehicle.id }}">
     카카오 1:1 문의

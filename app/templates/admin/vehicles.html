@@ -16,6 +16,7 @@
       <th style="width:80px;">유형</th>
       <th>월 구독료</th>
       <th style="width:100px;">공개 상태</th>
+      <th style="width:220px;">상태 전환</th>
       <th style="width:120px;">노출 위치</th>
       <th style="width:120px;text-align:right;">액션</th>
     </tr>
@@ -37,6 +38,17 @@
           <span class="admin-badge is-warn">판매완료</span>
         {% endif %}
       </td>
+      <td>
+        <form method="post" action="{{ url_for('admin.vehicles_set_visibility', vehicle_id=v.id) }}" class="vis-toggle">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+          <button type="submit" name="visibility" value="public"
+                  class="vis-btn {% if v.visibility == 'public' %}is-active is-public{% endif %}">공개</button>
+          <button type="submit" name="visibility" value="hidden"
+                  class="vis-btn {% if v.visibility == 'hidden' %}is-active is-hidden{% endif %}">숨김</button>
+          <button type="submit" name="visibility" value="soldout"
+                  class="vis-btn {% if v.visibility == 'soldout' %}is-active is-soldout{% endif %}">판매완료</button>
+        </form>
+      </td>
       <td style="font-size:13px;color:var(--ink-2);">
         {% if v.placement == 'collection' %}메인 컬렉션
         {% else %}<span style="color:var(--muted);">미배치</span>{% endif %}
@@ -50,7 +62,7 @@
       </td>
     </tr>
     {% else %}
-    <tr><td colspan="8" style="color:var(--muted);text-align:center;padding:24px;">등록된 차량이 없습니다.</td></tr>
+    <tr><td colspan="9" style="color:var(--muted);text-align:center;padding:24px;">등록된 차량이 없습니다.</td></tr>
     {% endfor %}
   </tbody>
 </table>

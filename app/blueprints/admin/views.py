@@ -4,6 +4,7 @@ from flask import flash, redirect, render_template, request, url_for
 from app.extensions import db
 from app.forms.vehicle_forms import BannerForm, BrandForm, FAQForm, NoticeForm, VehicleForm
 from app.models import Banner, Brand, FAQ, Notice, UpcomingSlot, User, Vehicle
+from app.models.vehicle import VISIBILITY_STATES
 from app.services import upcoming_service
 from app.services.site_settings import set_value as set_site_setting, get_kakao_channel_url
 from . import admin_bp
@@ -64,6 +65,24 @@ def vehicles_delete(vehicle_id: int):
     db.session.delete(vehicle)
     db.session.commit()
     flash("차량이 삭제되었습니다.", "success")
+    return redirect(url_for("admin.vehicles"))
+
+
+VISIBILITY_LABELS = {"public": "공개", "hidden": "숨김", "soldout": "판매완료"}
+
+
+@admin_bp.route("/vehicles/<int:vehicle_id>/visibility", methods=["POST"])
+def vehicles_set_visibility(vehicle_id: int):
+    v = Vehicle.query.get_or_404(vehicle_id)
+    new_state = (request.form.get("visibility") or "").strip()
+    if new_state not in VISIBILITY_STATES:
+        flash("잘못된 상태 값입니다.", "error")
+    elif v.visibility == new_state:
+        flash(f"'{v.model}'은(는) 이미 '{VISIBILITY_LABELS[new_state]}' 상태입니다.", "info")
+    else:
+        v.visibility = new_state
+        db.session.commit()
+        flash(f"'{v.model}' 상태를 '{VISIBILITY_LABELS[new_state]}'(으)로 변경했습니다.", "success")
     return redirect(url_for("admin.vehicles"))
 
 
