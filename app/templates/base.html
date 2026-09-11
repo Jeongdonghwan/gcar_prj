@@ -76,8 +76,9 @@
   {% endblock %}
 
   {% block floating_cta %}
+  {% from '_icons.html' import icon_phone %}
   <a class="phone-float" href="tel:{{ contact_phone_tel }}" data-contact-cta data-source="floating">
-    <span aria-hidden="true">📞</span>
+    {{ icon_phone(16) }}
     <span>{{ contact_phone }}</span>
   </a>
   {% endblock %}

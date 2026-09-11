@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% from 'public/_vehicle_card.html' import vehicle_card %}
+{% from '_icons.html' import icon_phone %}
 {% block title %}업커밍 — Great Car{% endblock %}
 
 {% block content %}
@@ -72,7 +73,7 @@
     <h3>출고 알림 받아보기</h3>
     <p style="color:rgba(255,255,255,0.8);margin-bottom:16px;">관심 차량을 전화 또는 1:1 문의로 알려주시면 가장 먼저 안내해드립니다.</p>
     <a class="btn btn-primary" href="tel:{{ contact_phone_tel }}" data-contact-cta data-source="upcoming">
-      📞 {{ contact_phone }}
+      {{ icon_phone(16) }} {{ contact_phone }}
     </a>
     <a class="btn btn-outline btn-invert" href="{{ url_for('public.qna_write') }}" style="margin-left:8px;">
       1:1 문의 남기기

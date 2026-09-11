@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% from 'public/_vehicle_card.html' import vehicle_card %}
+{% from '_icons.html' import icon_phone %}
 {% block title %}{{ vehicle.brand_name }} {{ vehicle.model }} — Great Car{% endblock %}
 {% block body_class %}has-mobile-cta{% endblock %}
 
@@ -92,7 +93,7 @@
         {% else %}
         <a class="btn btn-primary btn-block" style="margin-top:16px;" href="tel:{{ contact_phone_tel }}"
            data-contact-cta data-source="detail_cta" data-vehicle-id="{{ vehicle.id }}">
-          📞 전화 상담 {{ contact_phone }}
+          {{ icon_phone(16) }} 전화 상담 {{ contact_phone }}
         </a>
         <a class="btn btn-outline btn-block" style="margin-top:8px;" href="{{ url_for('public.qna_write') }}">
           1:1 문의 남기기
@@ -198,7 +199,7 @@
   {% else %}
   <a class="btn btn-primary" href="tel:{{ contact_phone_tel }}"
      data-contact-cta data-source="detail_cta" data-vehicle-id="{{ vehicle.id }}">
-    📞 전화 상담
+    {{ icon_phone(16) }} 전화 상담
   </a>
   {% endif %}
 </div>

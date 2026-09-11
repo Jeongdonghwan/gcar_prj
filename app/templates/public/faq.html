@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% from '_icons.html' import icon_phone %}
 {% block title %}고객센터 — Great Car{% endblock %}
 
 {% block content %}
@@ -15,7 +16,7 @@
       <a class="contact-phone" href="tel:{{ contact_phone_tel }}" data-contact-cta data-source="faq">{{ contact_phone }}</a>
       <p style="color:rgba(255,255,255,0.7);">차량·계약·정비 등 모든 문의를 전화 한 통으로 처리합니다.</p>
       <a class="btn btn-primary" href="tel:{{ contact_phone_tel }}" data-contact-cta data-source="faq">
-        📞 전화 상담하기
+        {{ icon_phone(16) }} 전화 상담하기
       </a>
       <a class="btn btn-outline btn-invert" href="{{ url_for('public.qna_list') }}" style="margin-top:8px;">
         1:1 문의 게시판 (Q&amp;A)
