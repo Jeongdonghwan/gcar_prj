@@ -34,16 +34,16 @@
 /* === Floating phone CTA ================================================ */
 .phone-float {
   position: fixed; right: 16px; bottom: 16px; z-index: 80;
-  display: inline-flex; align-items: center; gap: 8px;
+  display: inline-flex; align-items: center; gap: 10px;
   background: var(--ink); color: #fff;
-  padding: 12px 18px; border-radius: var(--radius-pill);
+  padding: 14px 22px; border-radius: var(--radius-pill);
   box-shadow: var(--shadow-float);
-  font-weight: 700; font-size: 14px;
+  font-weight: 800; font-size: 18px; letter-spacing: -0.01em;
   border: none;
 }
 .phone-float:hover { transform: translateY(-1px); transition: transform .15s; }
 @media (min-width: 1024px) {
-  .phone-float { right: 32px; bottom: 32px; padding: 14px 22px; font-size: 15px; }
+  .phone-float { right: 32px; bottom: 32px; padding: 16px 28px; font-size: 22px; }
 }
 body.no-floating .phone-float { display: none; }
 
