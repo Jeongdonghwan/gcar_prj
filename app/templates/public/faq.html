@@ -6,23 +6,20 @@
 
   <section style="margin:24px 0;">
     <h1 style="font-size:26px;">고객센터</h1>
-    <p style="color:var(--ink-2);margin-top:6px;">카카오 1:1 문의가 가장 빠릅니다.</p>
+    <p style="color:var(--ink-2);margin-top:6px;">전화 상담과 1:1 문의 게시판으로 도와드립니다.</p>
   </section>
 
   <div class="faq-grid">
-    <div class="kakao-card">
-      <h3>전화·메일보다 훨씬 빠르게</h3>
-      <p style="color:rgba(255,255,255,0.7);">차량·계약·정비 등 모든 문의를 카카오톡 1:1 채널에서 처리합니다.</p>
-      <div class="hours">
-        평일 10시 ~ 18시 (점심 12 ~ 13시)<br/>
-        주말/공휴일은 메시지 남겨주시면 다음 영업일에 답변드립니다.
-      </div>
-      {% if kakao_channel_url %}
-      <a class="btn btn-kakao" href="{{ kakao_channel_url }}" target="_blank"
-         data-kakao-cta data-kakao-url="{{ kakao_channel_url }}" data-source="faq">
-        카카오톡 1:1 문의 시작
+    <div class="contact-card">
+      <h3>{{ contact_hours }}</h3>
+      <a class="contact-phone" href="tel:{{ contact_phone_tel }}" data-contact-cta data-source="faq">{{ contact_phone }}</a>
+      <p style="color:rgba(255,255,255,0.7);">차량·계약·정비 등 모든 문의를 전화 한 통으로 처리합니다.</p>
+      <a class="btn btn-primary" href="tel:{{ contact_phone_tel }}" data-contact-cta data-source="faq">
+        📞 전화 상담하기
       </a>
-      {% endif %}
+      <a class="btn btn-outline btn-invert" href="{{ url_for('public.qna_list') }}" style="margin-top:8px;">
+        1:1 문의 게시판 (Q&amp;A)
+      </a>
     </div>
 
     <div class="notice-card">

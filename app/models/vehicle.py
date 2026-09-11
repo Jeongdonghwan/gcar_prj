@@ -52,6 +52,13 @@ class Vehicle(db.Model):
     price_min_man = db.Column(db.Integer)
     price_max_man = db.Column(db.Integer)
 
+    # 구독 옵션 — 약정 기간별 월 구독료 (만원)
+    price_3m_man = db.Column(db.Integer)    # 3개월 이상
+    price_6m_man = db.Column(db.Integer)    # 6개월 이상
+    price_24m_man = db.Column(db.Integer)   # 24개월 이상
+    deposit_man = db.Column(db.Integer)     # 보증금 (만원)
+    prepay_man = db.Column(db.Integer)      # 선납금 (만원)
+
     visibility = db.Column(
         db.Enum(*VISIBILITY_STATES, name="vehicle_visibility"),
         default="hidden",
@@ -102,6 +109,20 @@ class Vehicle(db.Model):
     @property
     def is_sold(self) -> bool:
         return self.visibility == "soldout"
+
+    @property
+    def subscription_tiers(self) -> list[dict]:
+        """약정 기간별 구독 옵션. 가격이 입력된 티어만 반환."""
+        tiers = [
+            ("3개월 이상", self.price_3m_man),
+            ("6개월 이상", self.price_6m_man),
+            ("24개월 이상", self.price_24m_man),
+        ]
+        return [{"label": label, "price_man": p} for label, p in tiers if p]
+
+    @property
+    def upfront_total_man(self) -> int:
+        return (self.deposit_man or 0) + (self.prepay_man or 0)
 
 
 class VehicleImage(db.Model):

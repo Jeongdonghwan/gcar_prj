@@ -27,6 +27,7 @@
         <a href="{{ url_for('admin.banners') }}" class="{% if request.endpoint and 'banner' in request.endpoint %}is-active{% endif %}">배너 관리</a>
         <a href="{{ url_for('admin.notices') }}" class="{% if request.endpoint and 'notice' in request.endpoint %}is-active{% endif %}">공지사항</a>
         <a href="{{ url_for('admin.faq_list') }}" class="{% if request.endpoint and 'faq' in request.endpoint %}is-active{% endif %}">FAQ</a>
+        <a href="{{ url_for('admin.qna_list') }}" class="{% if request.endpoint and 'qna' in request.endpoint %}is-active{% endif %}">1:1 문의</a>
         <a href="{{ url_for('admin.users') }}" class="{% if request.endpoint == 'admin.users' %}is-active{% endif %}">회원 관리</a>
         <a href="{{ url_for('admin.settings') }}" class="{% if request.endpoint == 'admin.settings' %}is-active{% endif %}">설정</a>
       </nav>

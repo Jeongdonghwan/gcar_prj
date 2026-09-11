@@ -5,12 +5,17 @@
 <form method="post">
   <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
   <fieldset class="form-set">
-    <legend>카카오 1:1 채널</legend>
+    <legend>고객센터</legend>
     <div class="form-grid">
-      <div class="form-field full">
-        <label>카카오 채널 URL</label>
-        <input type="url" name="kakao_channel_url" value="{{ kakao_channel_url }}" placeholder="https://pf.kakao.com/_xxxxx/chat" />
-        <p style="margin-top:6px;color:var(--muted);font-size:12px;">모든 공개 페이지의 플로팅·CTA 버튼이 이 URL로 연결됩니다.</p>
+      <div class="form-field">
+        <label>고객센터 전화번호</label>
+        <input type="tel" name="contact_phone" value="{{ contact_phone }}" placeholder="000-0000-0000" />
+        <p style="margin-top:6px;color:var(--muted);font-size:12px;">모든 공개 페이지의 플로팅 버튼·푸터·상담 CTA에 이 번호가 표시됩니다. 수시로 변경할 수 있습니다.</p>
+      </div>
+      <div class="form-field">
+        <label>상담 시간 문구</label>
+        <input type="text" name="contact_hours" value="{{ contact_hours }}" placeholder="24시간 상담 가능" />
+        <p style="margin-top:6px;color:var(--muted);font-size:12px;">전화번호 옆에 함께 표시되는 문구입니다. (예: 24시간 상담 가능)</p>
       </div>
     </div>
   </fieldset>

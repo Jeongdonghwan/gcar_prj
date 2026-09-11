@@ -122,9 +122,9 @@ def register_cli(app: Flask) -> None:
                 is_fast=fast,
                 is_deal=deal,
                 is_featured=feat,
-                headline="수리비·보증 무제한, 카카오 1:1로 시작",
+                headline="수리비·보증 무제한, 24시간 전화 상담",
                 description=(
-                    "월 단위 구독으로 가볍게 시작하세요. 카카오 1:1 채널에서 모든 절차를 도와드립니다."
+                    "월 단위 구독으로 가볍게 시작하세요. 고객센터 전화 상담으로 모든 절차를 도와드립니다."
                 ),
                 options_json=["ventilated_seat", "heated_seat", "hud", "harman_kardon"],
             )
@@ -191,7 +191,7 @@ def register_cli(app: Flask) -> None:
             ("signup", "회원가입은 어떻게 하나요?",
              "카카오톡으로 3초 만에 가입할 수 있습니다. 일반 이메일 가입도 지원합니다."),
             ("vehicle", "차량은 직접 보러 갈 수 있나요?",
-             "카카오 1:1 채널로 문의하시면 시승 일정을 조율해드립니다."),
+             "고객센터 전화 또는 1:1 문의를 남겨주시면 시승 일정을 조율해드립니다."),
             ("subscription", "구독 vs 렌트 차이가 뭔가요?",
              "구독은 보증·정비·세금이 모두 포함된 풀패키지, 렌트는 단기 위주입니다."),
             ("insurance", "보험은 별도 가입인가요?",
@@ -199,7 +199,7 @@ def register_cli(app: Flask) -> None:
             ("inspection", "정기 점검은 어떻게 진행되나요?",
              "전국 인증 정비망에서 무상으로 진행됩니다."),
             ("return", "반납할 때 위약금이 있나요?",
-             "약정 기간에 따라 다릅니다. 자세한 사항은 카카오 1:1 문의로 안내드립니다."),
+             "약정 기간에 따라 다릅니다. 자세한 사항은 고객센터 전화 상담으로 안내드립니다."),
         ]
         for i, (cat, q, a) in enumerate(items):
             db.session.add(FAQ(category=cat, question=q, answer=a, sort_order=i))
@@ -215,11 +215,11 @@ def register_cli(app: Flask) -> None:
         # 기본 배너 3개 (image_path 없이 — 어드민이 필요 시 이미지 URL 추가)
         defaults = [
             ("FOR SUBSCRIBERS", "수리비 0원,\n보증수리 무제한",
-             "차량 한 대를 한 달 단위로 가볍게 시작하세요.\n카카오 1:1로 빠른 상담.", None, 0),
+             "차량 한 대를 한 달 단위로 가볍게 시작하세요.\n24시간 전화 상담.", None, 0),
             ("NEW ARRIVALS", "이번 달의\n업커밍 차량 공개",
-             "에디터가 큐레이션한 다음 차례의 차량들. 카카오로 가장 먼저 안내드립니다.", "/upcoming", 1),
-            ("KAKAO 1:1", "전화·메일보다\n훨씬 빠르게",
-             "평일 10시 ~ 18시. 시승·계약·상담 모두 카카오톡 1:1에서.", None, 2),
+             "에디터가 큐레이션한 다음 차례의 차량들. 전화·1:1 문의로 가장 먼저 안내드립니다.", "/upcoming", 1),
+            ("24H SUPPORT", "언제든 전화 한 통으로\n빠르게",
+             "24시간 상담 가능. 시승·계약·상담 모두 전화 한 통으로.", None, 2),
         ]
         for eyebrow, title, subtitle, link, order in defaults:
             db.session.add(Banner(
@@ -273,7 +273,7 @@ def register_cli(app: Flask) -> None:
                     "· ZF 8단 스텝트로닉\n"
                     "· 어댑티브 M 서스펜션, 라이브 콕핏 프로페셔널\n"
                     "· 하만카돈 서라운드, HUD, 어라운드뷰\n\n"
-                    "카카오 1:1 채널에서 시승·계약을 도와드립니다."
+                    "고객센터 전화 상담으로 시승·계약을 도와드립니다."
                 ),
                 "is_featured": True,
                 "is_fast": True,
@@ -298,7 +298,7 @@ def register_cli(app: Flask) -> None:
                     "· 9G-Tronic 자동변속기\n"
                     "· MBUX 슈퍼스크린, 파노라마 루프\n"
                     "· 부메스터 3D 사운드, 어라운드뷰, HUD\n\n"
-                    "월 269만원부터 · 카카오 1:1 문의로 빠른 상담."
+                    "월 269만원부터 · 24시간 전화 상담."
                 ),
                 "is_featured": True,
                 "is_fast": False,

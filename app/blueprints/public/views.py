@@ -1,8 +1,10 @@
-from flask import abort, render_template, request
+from flask import abort, flash, redirect, render_template, request, url_for
+from flask_login import current_user, login_required
 from sqlalchemy import asc, desc
 
 from app.extensions import db
-from app.models import Banner, Brand, FAQ, Notice, UpcomingSlot, Vehicle
+from app.forms.vehicle_forms import QnaForm
+from app.models import Banner, Brand, FAQ, Notice, QnaPost, UpcomingSlot, Vehicle
 from app.models.content import FAQ_CATEGORIES
 from . import public_bp
 
@@ -118,6 +120,57 @@ def faq():
         categories=FAQ_CATEGORIES,
         active_category=category,
     )
+
+
+# --- Q&A (1:1 문의 게시판) ---------------------------------------------------
+@public_bp.route("/qna")
+def qna_list():
+    page = max(int(request.args.get("page", 1) or 1), 1)
+    pagination = (
+        QnaPost.query.order_by(QnaPost.created_at.desc())
+        .paginate(page=page, per_page=15, error_out=False)
+    )
+    return render_template("public/qna_list.html", pagination=pagination)
+
+
+@public_bp.route("/qna/write", methods=["GET", "POST"])
+@login_required
+def qna_write():
+    form = QnaForm()
+    if form.validate_on_submit():
+        post = QnaPost(
+            user_id=current_user.id,
+            title=form.title.data,
+            body=form.body.data,
+            is_private=form.is_private.data,
+        )
+        db.session.add(post)
+        db.session.commit()
+        flash("문의가 등록되었습니다. 답변이 등록되면 이곳에서 확인할 수 있어요.", "success")
+        return redirect(url_for("public.qna_detail", post_id=post.id))
+    return render_template("public/qna_form.html", form=form)
+
+
+@public_bp.route("/qna/<int:post_id>")
+def qna_detail(post_id: int):
+    post = QnaPost.query.get_or_404(post_id)
+    if not post.can_view(current_user):
+        if not current_user.is_authenticated:
+            return redirect(url_for("auth.login", next=request.path))
+        abort(403)
+    return render_template("public/qna_detail.html", post=post)
+
+
+@public_bp.route("/qna/<int:post_id>/delete", methods=["POST"])
+@login_required
+def qna_delete(post_id: int):
+    post = QnaPost.query.get_or_404(post_id)
+    if post.user_id != current_user.id and not getattr(current_user, "is_admin", False):
+        abort(403)
+    db.session.delete(post)
+    db.session.commit()
+    flash("문의가 삭제되었습니다.", "success")
+    return redirect(url_for("public.qna_list"))
 
 
 @public_bp.route("/notices")

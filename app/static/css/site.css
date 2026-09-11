@@ -31,21 +31,21 @@
 
 @media (min-width: 1024px) { .nav-pc { display: flex; } }
 
-/* === Floating Kakao ==================================================== */
-.kakao-float {
+/* === Floating phone CTA ================================================ */
+.phone-float {
   position: fixed; right: 16px; bottom: 16px; z-index: 80;
   display: inline-flex; align-items: center; gap: 8px;
-  background: var(--kakao); color: var(--kakao-ink);
+  background: var(--ink); color: #fff;
   padding: 12px 18px; border-radius: var(--radius-pill);
   box-shadow: var(--shadow-float);
   font-weight: 700; font-size: 14px;
   border: none;
 }
-.kakao-float:hover { transform: translateY(-1px); transition: transform .15s; }
+.phone-float:hover { transform: translateY(-1px); transition: transform .15s; }
 @media (min-width: 1024px) {
-  .kakao-float { right: 32px; bottom: 32px; padding: 14px 22px; font-size: 15px; }
+  .phone-float { right: 32px; bottom: 32px; padding: 14px 22px; font-size: 15px; }
 }
-body.no-floating .kakao-float { display: none; }
+body.no-floating .phone-float { display: none; }
 
 /* === Hero (simple dark banner, single column) ========================== */
 .hero {
@@ -595,12 +595,17 @@ body.no-floating .kakao-float { display: none; }
   display: grid; grid-template-columns: 1fr; gap: 16px;
 }
 @media (min-width: 1024px) { .faq-grid { grid-template-columns: 1fr 1fr; } }
-.kakao-card {
+.contact-card {
   background: var(--ink); color: #fff; border-radius: var(--radius-card); padding: 28px;
 }
-.kakao-card h3 { font-size: 22px; margin-bottom: 8px; color: #fff; }
-.kakao-card .hours { color: rgba(255,255,255,0.7); font-size: 13px; margin: 14px 0; }
-.kakao-card .btn { width: 100%; padding: 14px; font-size: 15px; }
+.contact-card h3 { font-size: 22px; margin-bottom: 8px; color: #fff; }
+.contact-card p { font-size: 13px; margin: 14px 0; }
+.contact-card .btn { width: 100%; padding: 14px; font-size: 15px; }
+.contact-card .btn-primary { background: var(--primary); color: var(--ink); }
+.contact-card .contact-phone {
+  display: block; font-size: 34px; font-weight: 800; letter-spacing: -0.02em;
+  color: var(--primary-glow); margin: 6px 0 4px;
+}
 
 .notice-card { background: var(--surface); border-radius: var(--radius-card); padding: 22px; }
 .notice-list { display: grid; gap: 10px; }
@@ -697,3 +702,88 @@ body.no-floating .kakao-float { display: none; }
   color: var(--muted);
 }
 .gallery.is-sold img { filter: grayscale(1); opacity: 0.85; }
+
+/* === Buttons on dark surfaces ========================================== */
+.btn-invert { color: #fff; border-color: rgba(255,255,255,0.4); }
+.btn-invert:hover { border-color: #fff; }
+
+/* === Footer contact (고객센터 전화번호) ================================= */
+.footer-contact { margin-bottom: 24px; }
+.footer-contact .label { font-size: 13px; color: var(--muted); font-weight: 700; }
+.footer-contact .phone {
+  display: inline-block; font-size: 36px; font-weight: 800;
+  letter-spacing: -0.02em; color: var(--ink); margin: 4px 0 2px;
+}
+@media (min-width: 1024px) { .footer-contact .phone { font-size: 44px; } }
+.footer-contact .hours { font-size: 14px; color: var(--ink-2); }
+
+/* === Subscription options (차량 상세 구독 옵션) ========================= */
+.sub-options { margin-top: 24px; }
+.sub-options-title { font-size: 18px; font-weight: 800; margin-bottom: 12px; }
+.sub-tier-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.sub-tier {
+  position: relative; background: #fff; border: 1px solid var(--line);
+  border-radius: var(--radius-sm); padding: 26px 8px 18px; text-align: center;
+  display: flex; flex-direction: column; gap: 4px; align-items: center;
+  transition: border-color .15s, box-shadow .15s;
+}
+.sub-tier .check {
+  position: absolute; top: 10px; right: 10px;
+  width: 18px; height: 18px; border-radius: 50%;
+  border: 1.5px solid var(--line);
+}
+.sub-tier .term { font-size: 14px; font-weight: 700; color: var(--ink); }
+.sub-tier .price { font-size: 13px; color: var(--ink); }
+.sub-tier .price b { font-size: 19px; font-weight: 800; }
+.sub-tier.is-active {
+  border: 2px solid var(--primary); box-shadow: var(--shadow-card);
+}
+.sub-tier.is-active .check {
+  border-color: var(--primary); background: var(--primary);
+}
+.sub-tier.is-active .check::after {
+  content: '✓'; color: #fff; font-size: 12px; font-weight: 800;
+  display: flex; align-items: center; justify-content: center; height: 100%;
+}
+.sub-tier.is-active .price { color: var(--primary-deep); }
+.sub-upfront-note {
+  margin-top: 14px; background: var(--surface); border-radius: var(--radius-sm);
+  padding: 16px 18px; font-size: 14px; color: var(--ink-2); line-height: 1.6;
+}
+.sub-upfront-note b { color: var(--ink); }
+.sub-upfront-note .total { margin-top: 10px; font-weight: 700; color: var(--ink); }
+
+/* === Q&A (1:1 문의 게시판) ============================================== */
+.qna-list { border-top: 2px solid var(--ink); }
+.qna-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 14px 4px; border-bottom: 1px solid var(--line-2); font-size: 14px;
+}
+.qna-status {
+  flex-shrink: 0; font-size: 11px; font-weight: 700; padding: 4px 10px;
+  border-radius: 999px; background: var(--surface-2); color: var(--ink-2);
+}
+.qna-status.is-done { background: var(--primary-soft); color: var(--primary-deep); }
+.qna-title { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.qna-title:hover { color: var(--primary-deep); }
+.qna-title.is-locked { color: var(--muted); }
+.qna-meta { flex-shrink: 0; color: var(--muted); font-size: 12px; }
+.qna-lock { font-size: 12px; color: var(--muted); }
+.qna-body {
+  background: var(--surface); border-radius: var(--radius-sm);
+  padding: 20px; white-space: pre-wrap; line-height: 1.7;
+}
+.qna-answer {
+  margin-top: 16px; border: 1px solid var(--line); border-radius: var(--radius-sm);
+  padding: 20px;
+}
+.qna-answer .who { font-weight: 800; margin-bottom: 8px; color: var(--primary-deep); }
+.qna-answer .text { white-space: pre-wrap; line-height: 1.7; }
+.qna-answer.is-pending { border-style: dashed; color: var(--ink-2); }
+.qna-form .input-text {
+  width: 100%; border: 1px solid var(--line); border-radius: var(--radius-sm);
+  padding: 12px 14px; font-size: 15px; background: #fff;
+}
+.qna-form .input-text:focus { outline: none; border-color: var(--ink); }
+.qna-form textarea.input-text { resize: vertical; min-height: 180px; }
+.field-error { color: #d33; font-size: 12px; margin-top: 4px; }

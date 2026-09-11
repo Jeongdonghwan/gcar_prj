@@ -28,6 +28,14 @@
     <div class="form-grid">
       <div class="form-field"><label>월 구독료 최저가 (만원)</label>{{ form.price_min_man(type='number') }}</div>
       <div class="form-field"><label>월 구독료 최고가 (만원)</label>{{ form.price_max_man(type='number') }}</div>
+      <div class="form-field"><label>3개월 이상 월 구독료 (만원)</label>{{ form.price_3m_man(type='number') }}</div>
+      <div class="form-field"><label>6개월 이상 월 구독료 (만원)</label>{{ form.price_6m_man(type='number') }}</div>
+      <div class="form-field"><label>24개월 이상 월 구독료 (만원)</label>{{ form.price_24m_man(type='number') }}</div>
+      <div class="form-field"><label>보증금 (만원)</label>{{ form.deposit_man(type='number') }}</div>
+      <div class="form-field"><label>선납금 (만원)</label>{{ form.prepay_man(type='number') }}</div>
+      <div class="form-field full">
+        <p style="color:var(--muted);font-size:12px;margin:0;">기간별 구독료를 입력하면 상세 페이지에 "구독 옵션" 선택 UI가 표시됩니다. 비워두면 해당 기간 옵션은 숨겨집니다.</p>
+      </div>
       <div class="form-field"><label>상품 유형</label>{{ form.product_type() }}</div>
       <div class="form-field"><label>공개 상태</label>{{ form.visibility() }}</div>
       <div class="form-field"><label>업커밍 배치</label>{{ form.upcoming_group() }}</div>

@@ -40,7 +40,6 @@ class BaseConfig:
     KAKAO_REDIRECT_URI = os.environ.get(
         "KAKAO_REDIRECT_URI", "http://localhost:5000/auth/kakao/callback"
     )
-    KAKAO_CHANNEL_URL_FALLBACK = os.environ.get("KAKAO_CHANNEL_URL", "")
 
 
 class DevConfig(BaseConfig):

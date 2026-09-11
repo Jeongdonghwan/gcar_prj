@@ -34,21 +34,16 @@
     onScroll();
   }
 
-  // Floating Kakao button — optional inquiry logging then open chat
-  document.querySelectorAll('[data-kakao-cta]').forEach((btn) => {
-    btn.addEventListener('click', async (e) => {
-      const url = btn.dataset.kakaoUrl || btn.getAttribute('href');
-      if (!url) return;
-      e.preventDefault();
+  // Contact CTA (tel: links) — log the inquiry, then let the call proceed
+  document.querySelectorAll('[data-contact-cta]').forEach((btn) => {
+    btn.addEventListener('click', () => {
       const source = btn.dataset.source || 'unknown';
       const vehicleId = btn.dataset.vehicleId || null;
-      try {
-        await window.apiFetch('/api/inquiries', {
-          method: 'POST',
-          body: { source: source, vehicle_id: vehicleId },
-        });
-      } catch (_) { /* swallow */ }
-      window.open(url, '_blank', 'noopener');
+      // fire-and-forget: tel: navigation must not wait on the request
+      window.apiFetch('/api/inquiries', {
+        method: 'POST',
+        body: { source: source, vehicle_id: vehicleId },
+      }).catch(() => { /* swallow */ });
     });
   });
 })();

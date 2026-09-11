@@ -1,7 +1,11 @@
 """Cached SiteSetting accessor. Invalidate on admin edit."""
-from flask import current_app
+import re
+
 from app.extensions import db
 from app.models import SiteSetting
+
+DEFAULT_CONTACT_PHONE = "000-0000-0000"
+DEFAULT_CONTACT_HOURS = "24시간 상담 가능"
 
 _cache: dict[str, str] = {}
 
@@ -42,12 +46,15 @@ def set_value(key: str, value: str) -> None:
     invalidate(key)
 
 
-def get_kakao_channel_url() -> str:
-    val = get("kakao_channel_url", "")
-    if val:
-        return val
-    # Fallback to env-set value (Sprint 1 dev)
-    try:
-        return current_app.config.get("KAKAO_CHANNEL_URL_FALLBACK", "")
-    except RuntimeError:
-        return ""
+def get_contact_phone() -> str:
+    """고객센터 전화번호. 어드민 설정에서 수시로 변경 가능."""
+    return get("contact_phone", DEFAULT_CONTACT_PHONE)
+
+
+def get_contact_phone_tel() -> str:
+    """tel: 링크용 — 숫자만 남긴 전화번호."""
+    return re.sub(r"\D", "", get_contact_phone())
+
+
+def get_contact_hours() -> str:
+    return get("contact_hours", DEFAULT_CONTACT_HOURS)

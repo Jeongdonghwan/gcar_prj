@@ -79,6 +79,11 @@ class VehicleForm(FlaskForm):
     # 2) 가격·노출
     price_min_man = IntegerField("월 구독료 최저가(만원)", validators=[Optional(), NumberRange(min=0)])
     price_max_man = IntegerField("월 구독료 최고가(만원)", validators=[Optional(), NumberRange(min=0)])
+    price_3m_man = IntegerField("3개월 이상 월 구독료(만원)", validators=[Optional(), NumberRange(min=0)])
+    price_6m_man = IntegerField("6개월 이상 월 구독료(만원)", validators=[Optional(), NumberRange(min=0)])
+    price_24m_man = IntegerField("24개월 이상 월 구독료(만원)", validators=[Optional(), NumberRange(min=0)])
+    deposit_man = IntegerField("보증금(만원)", validators=[Optional(), NumberRange(min=0)])
+    prepay_man = IntegerField("선납금(만원)", validators=[Optional(), NumberRange(min=0)])
     product_type = SelectField("상품 유형", choices=[(v, PRODUCT_TYPE_LABELS.get(v, v)) for v in PRODUCT_TYPES], default="subscription")
     visibility = SelectField("공개 상태", choices=[(v, VISIBILITY_LABELS.get(v, v)) for v in VISIBILITY_STATES], default="public")
     show_in_collection = BooleanField("메인 컬렉션 노출")
@@ -98,6 +103,16 @@ class VehicleForm(FlaskForm):
 
     # 5) 편의 옵션
     options = MultiCheckboxField("편의 옵션", choices=COMFORT_OPTIONS)
+
+
+class QnaForm(FlaskForm):
+    title = StringField("제목", validators=[DataRequired(), Length(max=200)])
+    body = TextAreaField("문의 내용", validators=[DataRequired()])
+    is_private = BooleanField("비공개 (나와 관리자만 볼 수 있어요)", default=True)
+
+
+class QnaAnswerForm(FlaskForm):
+    answer = TextAreaField("답변", validators=[DataRequired()])
 
 
 class NoticeForm(FlaskForm):

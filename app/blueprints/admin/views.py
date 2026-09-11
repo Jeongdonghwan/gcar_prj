@@ -1,12 +1,24 @@
+from datetime import datetime
 from pathlib import Path
 from flask import flash, redirect, render_template, request, url_for
 
 from app.extensions import db
-from app.forms.vehicle_forms import BannerForm, BrandForm, FAQForm, NoticeForm, VehicleForm
-from app.models import Banner, Brand, FAQ, Notice, UpcomingSlot, User, Vehicle
+from app.forms.vehicle_forms import (
+    BannerForm,
+    BrandForm,
+    FAQForm,
+    NoticeForm,
+    QnaAnswerForm,
+    VehicleForm,
+)
+from app.models import Banner, Brand, FAQ, Notice, QnaPost, UpcomingSlot, User, Vehicle
 from app.models.vehicle import VISIBILITY_STATES
 from app.services import upcoming_service
-from app.services.site_settings import set_value as set_site_setting, get_kakao_channel_url
+from app.services.site_settings import (
+    get_contact_hours,
+    get_contact_phone,
+    set_value as set_site_setting,
+)
 from . import admin_bp
 
 
@@ -108,6 +120,11 @@ def _apply_vehicle_form(v: Vehicle, form: VehicleForm) -> None:
     v.plate = form.plate.data or None
     v.price_min_man = form.price_min_man.data
     v.price_max_man = form.price_max_man.data
+    v.price_3m_man = form.price_3m_man.data
+    v.price_6m_man = form.price_6m_man.data
+    v.price_24m_man = form.price_24m_man.data
+    v.deposit_man = form.deposit_man.data
+    v.prepay_man = form.prepay_man.data
     v.product_type = form.product_type.data
     v.visibility = form.visibility.data
     v.placement = "collection" if form.show_in_collection.data else "none"
@@ -365,14 +382,51 @@ def users():
     return render_template("admin/users.html", users=items)
 
 
+# --- Q&A (1:1 문의) ---------------------------------------------------------
+@admin_bp.route("/qna")
+def qna_list():
+    items = (
+        QnaPost.query.order_by(
+            QnaPost.answered_at.isnot(None).asc(), QnaPost.created_at.desc()
+        ).all()
+    )
+    return render_template("admin/qna_list.html", posts=items)
+
+
+@admin_bp.route("/qna/<int:post_id>", methods=["GET", "POST"])
+def qna_detail(post_id: int):
+    post = QnaPost.query.get_or_404(post_id)
+    form = QnaAnswerForm(obj=post)
+    if form.validate_on_submit():
+        post.answer = form.answer.data
+        post.answered_at = datetime.utcnow()
+        db.session.commit()
+        flash("답변이 등록되었습니다.", "success")
+        return redirect(url_for("admin.qna_list"))
+    return render_template("admin/qna_detail.html", post=post, form=form)
+
+
+@admin_bp.route("/qna/<int:post_id>/delete", methods=["POST"])
+def qna_delete(post_id: int):
+    post = QnaPost.query.get_or_404(post_id)
+    db.session.delete(post)
+    db.session.commit()
+    flash("문의가 삭제되었습니다.", "success")
+    return redirect(url_for("admin.qna_list"))
+
+
 # --- Site settings ---------------------------------------------------------
 @admin_bp.route("/settings", methods=["GET", "POST"])
 def settings():
     if request.method == "POST":
-        url = (request.form.get("kakao_channel_url") or "").strip()
-        set_site_setting("kakao_channel_url", url)
+        phone = (request.form.get("contact_phone") or "").strip()
+        hours = (request.form.get("contact_hours") or "").strip()
+        set_site_setting("contact_phone", phone)
+        set_site_setting("contact_hours", hours)
         flash("저장되었습니다.", "success")
         return redirect(url_for("admin.settings"))
     return render_template(
-        "admin/settings.html", kakao_channel_url=get_kakao_channel_url()
+        "admin/settings.html",
+        contact_phone=get_contact_phone(),
+        contact_hours=get_contact_hours(),
     )

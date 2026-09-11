@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% block title %}1:1 문의 — Great Car{% endblock %}
+
+{% block content %}
+<div class="container">
+
+  <section style="margin:24px 0;display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+    <div>
+      <h1 style="font-size:26px;">1:1 문의 (Q&amp;A)</h1>
+      <p style="color:var(--ink-2);margin-top:6px;">
+        회원이라면 누구나 문의를 남길 수 있어요. 비공개 글은 작성자와 관리자만 볼 수 있습니다.
+      </p>
+    </div>
+    {% if current_user.is_authenticated %}
+    <a class="btn btn-primary" href="{{ url_for('public.qna_write') }}">문의 작성하기</a>
+    {% else %}
+    <a class="btn btn-primary" href="{{ url_for('auth.login', next=url_for('public.qna_write')) }}">로그인하고 문의하기</a>
+    {% endif %}
+  </section>
+
+  <div class="qna-list">
+    {% for p in pagination.items %}
+      {% set viewable = p.can_view(current_user) %}
+      <div class="qna-row">
+        <span class="qna-status {% if p.is_answered %}is-done{% endif %}">
+          {{ '답변완료' if p.is_answered else '접수' }}
+        </span>
+        {% if viewable %}
+        <a class="qna-title" href="{{ url_for('public.qna_detail', post_id=p.id) }}">
+          {% if p.is_private %}<span aria-hidden="true">🔒</span>{% endif %}
+          {{ p.title }}
+        </a>
+        {% else %}
+        <span class="qna-title is-locked">🔒 비밀글입니다</span>
+        {% endif %}
+        <span class="qna-meta">{{ (p.user.name or '회원')[:1] }}**</span>
+        <span class="qna-meta">{{ p.created_at | date_kr }}</span>
+      </div>
+    {% else %}
+      <div class="empty-state">아직 등록된 문의가 없습니다. 첫 문의를 남겨보세요.</div>
+    {% endfor %}
+  </div>
+
+  {% if pagination.pages > 1 %}
+  <div class="catalog-pager" style="margin-top:24px;">
+    {% for num in pagination.iter_pages() %}
+      {% if num %}
+        <a class="pager-btn {% if num == pagination.page %}is-active{% endif %}"
+           href="{{ url_for('public.qna_list', page=num) }}">{{ num }}</a>
+      {% else %}
+        <span class="pager-gap">…</span>
+      {% endif %}
+    {% endfor %}
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}

@@ -1,0 +1,31 @@
+{% extends 'admin/admin_base.html' %}
+{% block crumb %}1:1 문의 / 답변{% endblock %}
+{% block page_title %}{{ post.title }}{% endblock %}
+{% block content %}
+
+<fieldset class="form-set">
+  <legend>문의 내용</legend>
+  <p style="color:var(--muted);font-size:13px;margin-bottom:10px;">
+    {{ post.user.name or post.user.email }} · {{ post.created_at | date_kr }}
+    · {{ '비공개' if post.is_private else '공개' }}
+  </p>
+  <div style="white-space:pre-wrap;line-height:1.7;">{{ post.body }}</div>
+</fieldset>
+
+<form method="post">
+  {{ form.csrf_token }}
+  <fieldset class="form-set">
+    <legend>답변 {% if post.is_answered %}(등록됨 — 수정 가능){% endif %}</legend>
+    <div class="form-grid">
+      <div class="form-field full">
+        {{ form.answer(rows=8) }}
+        {% for e in form.answer.errors %}<p style="color:#d33;font-size:12px;">{{ e }}</p>{% endfor %}
+      </div>
+    </div>
+  </fieldset>
+  <div class="form-actions">
+    <a class="btn btn-outline" href="{{ url_for('admin.qna_list') }}">목록으로</a>
+    <button class="btn btn-primary" type="submit">답변 저장</button>
+  </div>
+</form>
+{% endblock %}

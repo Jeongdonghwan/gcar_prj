@@ -72,10 +72,16 @@ def create_app(config_class: str | None = None) -> Flask:
 
 
 def _register_context(app: Flask) -> None:
-    from app.services.site_settings import get_kakao_channel_url
+    from app.services.site_settings import (
+        get_contact_hours,
+        get_contact_phone,
+        get_contact_phone_tel,
+    )
 
     @app.context_processor
     def inject_globals():
         return {
-            "kakao_channel_url": get_kakao_channel_url(),
+            "contact_phone": get_contact_phone(),
+            "contact_phone_tel": get_contact_phone_tel(),
+            "contact_hours": get_contact_hours(),
         }

@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% block title %}{{ post.title }} — 1:1 문의 — Great Car{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width:720px;">
+
+  <section style="margin:24px 0;">
+    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+      <span class="qna-status {% if post.is_answered %}is-done{% endif %}">
+        {{ '답변완료' if post.is_answered else '접수' }}
+      </span>
+      {% if post.is_private %}<span class="qna-lock">🔒 비공개</span>{% endif %}
+    </div>
+    <h1 style="font-size:24px;margin-top:10px;">{{ post.title }}</h1>
+    <p style="color:var(--muted);font-size:13px;margin-top:6px;">
+      {{ (post.user.name or '회원')[:1] }}** · {{ post.created_at | date_kr }}
+    </p>
+  </section>
+
+  <div class="qna-body">{{ post.body }}</div>
+
+  {% if post.is_answered %}
+  <div class="qna-answer">
+    <div class="who">Great Car 고객센터 <span style="color:var(--muted);font-weight:400;font-size:12px;">{{ post.answered_at | date_kr }}</span></div>
+    <div class="text">{{ post.answer }}</div>
+  </div>
+  {% else %}
+  <div class="qna-answer is-pending">
+    <div class="text">아직 답변이 등록되지 않았어요. 급하신 경우 고객센터
+      <a href="tel:{{ contact_phone_tel }}" style="color:var(--primary);font-weight:700;">{{ contact_phone }}</a>
+      ({{ contact_hours }})로 전화 주세요.</div>
+  </div>
+  {% endif %}
+
+  <div style="display:flex;gap:8px;justify-content:space-between;margin-top:24px;">
+    <a class="btn btn-outline" href="{{ url_for('public.qna_list') }}">← 목록으로</a>
+    {% if current_user.is_authenticated and (current_user.id == post.user_id or current_user.is_admin) %}
+    <form method="post" action="{{ url_for('public.qna_delete', post_id=post.id) }}"
+          onsubmit="return confirm('문의를 삭제할까요?');">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+      <button class="btn btn-outline" type="submit" style="color:var(--danger, #d33);">삭제</button>
+    </form>
+    {% endif %}
+  </div>
+
+</div>
+{% endblock %}

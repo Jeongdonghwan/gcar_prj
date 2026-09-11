@@ -1,0 +1,37 @@
+{% extends 'admin/admin_base.html' %}
+{% block crumb %}1:1 문의{% endblock %}
+{% block page_title %}1:1 문의 관리{% endblock %}
+{% block content %}
+<table class="data-table">
+  <thead>
+    <tr><th>ID</th><th>상태</th><th>제목</th><th>작성자</th><th>공개</th><th>작성일</th><th></th></tr>
+  </thead>
+  <tbody>
+    {% for p in posts %}
+    <tr>
+      <td>{{ p.id }}</td>
+      <td>
+        {% if p.is_answered %}
+          <span class="badge" style="background:var(--primary);color:#fff;padding:3px 10px;border-radius:999px;font-size:12px;">답변완료</span>
+        {% else %}
+          <span class="badge" style="background:#E5483D;color:#fff;padding:3px 10px;border-radius:999px;font-size:12px;">대기</span>
+        {% endif %}
+      </td>
+      <td><a href="{{ url_for('admin.qna_detail', post_id=p.id) }}">{{ p.title }}</a></td>
+      <td>{{ p.user.name or p.user.email }}</td>
+      <td>{{ '비공개' if p.is_private else '공개' }}</td>
+      <td>{{ p.created_at | date_kr }}</td>
+      <td>
+        <form method="post" action="{{ url_for('admin.qna_delete', post_id=p.id) }}"
+              onsubmit="return confirm('문의를 삭제할까요?');" style="display:inline;">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+          <button class="btn btn-outline" type="submit" style="padding:4px 10px;font-size:12px;">삭제</button>
+        </form>
+      </td>
+    </tr>
+    {% else %}
+    <tr><td colspan="7" style="color:var(--muted);">등록된 문의가 없습니다.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

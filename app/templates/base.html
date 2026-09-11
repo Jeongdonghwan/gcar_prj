@@ -6,7 +6,7 @@
   <meta name="csrf-token" content="{{ csrf_token() }}" />
   {% block meta %}
   <title>{% block title %}Great Car — 차량 구독·렌트 큐레이션{% endblock %}</title>
-  <meta name="description" content="수리비 0원, 보증수리 무제한. 차량 구독·렌트를 큐레이션해 카카오 1:1로 빠르게 시작하세요." />
+  <meta name="description" content="수리비 0원, 보험 포함. 차량 구독·렌트를 큐레이션해 24시간 전화 상담으로 빠르게 시작하세요." />
   <meta property="og:title" content="Great Car" />
   <meta property="og:description" content="차량 구독·렌트 큐레이션 플랫폼" />
   <meta property="og:type" content="website" />
@@ -59,24 +59,27 @@
   {% block footer %}
   <footer class="site-footer">
     <div class="container">
+      <div class="footer-contact">
+        <div class="label">고객센터</div>
+        <a class="phone" href="tel:{{ contact_phone_tel }}" data-contact-cta data-source="footer">{{ contact_phone }}</a>
+        <div class="hours">{{ contact_hours }}</div>
+        <a class="btn btn-outline" href="{{ url_for('public.qna_list') }}" style="margin-top:12px;">1:1 문의 게시판 →</a>
+      </div>
       <div class="links">
         <a href="{{ url_for('public.terms', which='service') }}">서비스 이용약관</a>
         <a href="{{ url_for('public.terms', which='privacy') }}">개인정보 처리방침</a>
         <a href="{{ url_for('public.faq') }}">고객센터</a>
       </div>
-      <p style="margin-top:12px;">© Great Car. 모든 차량 문의는 카카오톡 1:1 채널로 진행됩니다.</p>
+      <p style="margin-top:12px;">© Great Car. 차량 문의는 전화 또는 1:1 문의 게시판을 이용해주세요.</p>
     </div>
   </footer>
   {% endblock %}
 
-  {% block kakao_float %}
-  {% if kakao_channel_url %}
-  <a class="kakao-float" href="{{ kakao_channel_url }}" target="_blank" rel="noopener"
-     data-kakao-cta data-kakao-url="{{ kakao_channel_url }}" data-source="floating">
-    <span aria-hidden="true">💬</span>
-    <span>1:1 문의</span>
+  {% block floating_cta %}
+  <a class="phone-float" href="tel:{{ contact_phone_tel }}" data-contact-cta data-source="floating">
+    <span aria-hidden="true">📞</span>
+    <span>{{ contact_phone }}</span>
   </a>
-  {% endif %}
   {% endblock %}
 
   <script src="{{ url_for('static', filename='js/common.js') }}"></script>
